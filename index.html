@@ -23,7 +23,9 @@
 
   /* shell */
   .shell{display:grid;grid-template-columns:236px 1fr;grid-template-rows:56px 1fr;grid-template-areas:"brand top" "side main";min-height:100vh;}
-  .brand{grid-area:brand;background:var(--purple);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 18px;}
+  .brand{grid-area:brand;background:var(--purple);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 18px;cursor:pointer;transition:background .12s;}
+  .brand:hover{background:var(--purple-700);}
+  .brand:focus-visible{outline:2px solid var(--magenta);outline-offset:-2px;}
   .brand .name{font-weight:700;font-size:16px;letter-spacing:.1px;}
   .brand .name b{color:var(--magenta);font-weight:700;}
   .brand .name .dot{color:var(--magenta);}
@@ -40,6 +42,24 @@
   .icobtn:hover{background:var(--mist);border-color:var(--purple-mid);color:var(--purple);}
   .icobtn svg{width:17px;height:17px;}
   .icobtn .badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--magenta);color:#fff;font-family:var(--fm);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .alertwrap{position:relative;}
+  .alertmenu{position:absolute;top:42px;right:0;width:340px;max-width:86vw;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 16px 40px rgba(30,10,35,.22);z-index:80;overflow:hidden;}
+  .alertmenu .am-head{font-family:var(--fm);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:12px 14px 8px;border-bottom:1px solid var(--line);}
+  .alertmenu .am-head span{color:var(--purple);font-weight:700;}
+  .am-list{max-height:320px;overflow-y:auto;}
+  .am-item{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);padding:11px 14px;cursor:pointer;font-family:inherit;transition:background .1s;}
+  .am-item:hover{background:var(--mist);}
+  .am-item .am-r{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+  .am-item .am-check{font-size:13px;font-weight:600;color:var(--purple);}
+  .am-item .am-cash{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--magenta);white-space:nowrap;}
+  .am-item .am-cash.zero{color:var(--muted);font-weight:400;}
+  .am-item .am-rec{font-family:var(--fm);font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .am-item .am-eff{font-size:11.5px;color:var(--ink);margin-top:3px;line-height:1.35;}
+  .am-all{display:block;width:100%;text-align:center;background:var(--mist);border:none;padding:10px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--purple);cursor:pointer;}
+  .am-all:hover{background:var(--line);}
+  .am-empty{padding:16px 14px;font-size:12.5px;color:var(--muted);}
+  #hlTable tr.drives td{background:rgba(224,4,78,.045);}
+  #hlTable tr.drives td:first-child{box-shadow:inset 3px 0 0 var(--magenta);}
   .mast-div{width:1px;height:28px;background:var(--line);}
   .user{display:flex;align-items:center;gap:9px;padding:5px 8px 5px 5px;border-radius:10px;cursor:pointer;position:relative;transition:background .12s;}
   .user:hover{background:var(--mist);}
@@ -85,7 +105,7 @@
   .nav button .soon{margin-left:auto;font-family:var(--fm);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:#b79ac6;}
   .nav .dotmark{width:6px;height:6px;border-radius:50%;background:var(--magenta);flex:none;}
 
-  .main{grid-area:main;padding:26px 32px 70px;max-width:1120px;overflow-x:hidden;}
+  .main{grid-area:main;padding:26px 32px 70px;max-width:1280px;overflow-x:hidden;}
   .panel{display:none;}
   .panel.on{display:block;animation:fade .18s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
@@ -93,7 +113,7 @@
   .phead{margin-bottom:18px;}
   .crumb{font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
   .phead h1{font-size:25px;font-weight:800;letter-spacing:-.02em;color:var(--purple);margin:0;}
-  .phead .sub{color:var(--muted);font-size:13.5px;margin-top:4px;max-width:760px;}
+  .phead .sub{color:var(--muted);font-size:13.5px;margin-top:4px;max-width:860px;}
 
   .eyebrow{font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--purple-mid);font-weight:600;margin:30px 0 8px;}
   .eyebrow:first-child{margin-top:6px;}
@@ -165,7 +185,7 @@
   .g .tip::after{content:"";position:absolute;top:100%;left:14px;border:6px solid transparent;border-top-color:var(--purple);}
   .g:hover .tip,.g:focus .tip{visibility:visible;opacity:1;}
 
-  .lede{color:var(--muted);font-size:14px;max-width:760px;margin:0 0 6px;}
+  .lede{color:var(--muted);font-size:14px;max-width:860px;margin:0 0 6px;}
   .prose p{margin:9px 0;} .prose h4{color:var(--purple);font-size:15px;margin:16px 0 4px;}
   ul.clean{margin:8px 0;padding-left:18px;} ul.clean li{margin:6px 0;}
   .figure{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px 12px;}
@@ -210,44 +230,33 @@
   @media(min-width:901px){ .mtoggle{display:none;} }
   .mtoggle{background:var(--mist);border:1px solid var(--line);border-radius:8px;padding:6px 10px;align-items:center;gap:6px;cursor:pointer;color:var(--purple);font-size:12px;}
   /* ===== How It Works visual explainer ===== */
-  .hiw-lead{font-size:17px;line-height:1.5;color:var(--ink);max-width:660px;margin:2px 0 0;}
+  .hiw-lead{font-size:17px;line-height:1.5;color:var(--ink);max-width:820px;margin:2px 0 0;}
   .hiw-lead b{color:var(--purple);font-weight:700;}
   .startbtn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:var(--purple);color:#fff;border:none;border-radius:9px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
   .startbtn:hover{background:var(--purple-700);}
   .steptag{font-family:var(--fm);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--magenta);font-weight:700;margin-bottom:6px;}
-  .hiw-say{font-size:15px;color:var(--ink);line-height:1.55;max-width:640px;}
+  .hiw-say{font-size:15px;color:var(--ink);line-height:1.55;max-width:820px;}
   .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease;}
   .reveal.in{opacity:1;transform:none;}
-  /* cash gap timeline */
-  .cashgap{position:relative;height:150px;max-width:680px;margin:6px auto 2px;overflow:hidden;}
-  .cashgap .axis{position:absolute;left:8%;right:8%;top:80px;height:2px;background:var(--line);}
-  .cashgap .band{position:absolute;top:76px;height:10px;border-radius:5px;background:rgba(224,4,78,.14);left:20%;width:60%;animation:bandpulse 7s ease-in-out infinite;}
-  @keyframes bandpulse{0%,100%{opacity:.5;}50%{opacity:1;}}
-  .cashgap .mark{position:absolute;top:62px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--purple);transform:translateX(-50%);z-index:2;}
-  .cashgap .mark.out{border-color:var(--magenta);} .cashgap .mark.inc{border-color:var(--up);}
-  .cashgap .lab{position:absolute;top:100px;font-size:11.5px;color:var(--ink);transform:translateX(-50%);text-align:center;width:130px;line-height:1.25;}
-  .cashgap .lab .s{display:block;font-family:var(--fm);font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
-  .cashgap .caplab{position:absolute;top:44px;left:50%;transform:translateX(-50%);font-family:var(--fm);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--magenta);font-weight:700;}
-  .cashgap .coin{position:absolute;top:66px;left:20%;width:20px;height:20px;border-radius:50%;background:var(--magenta);transform:translateX(-50%);box-shadow:0 2px 6px rgba(224,4,78,.4);animation:coinrun 7s ease-in-out infinite;z-index:3;}
-  @keyframes coinrun{0%{left:20%;background:var(--magenta);opacity:0;}10%{opacity:1;}88%{opacity:1;background:#c22;}100%{left:80%;background:var(--up);opacity:0;}}
+  /* cash gap breakdown */
+  .wcflow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .wcf-tile{flex:1 1 150px;min-width:130px;background:var(--mist);border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;text-align:left;}
+  .wcf-tile.result{background:var(--purple);border-color:var(--purple);}
+  .wcf-lbl{font-family:var(--fm);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);line-height:1.3;}
+  .wcf-tile.result .wcf-lbl{color:#d9c4e0;}
+  .wcf-val{font-size:30px;font-weight:800;color:var(--purple);letter-spacing:-.02em;line-height:1.05;margin-top:6px;}
+  .wcf-val .un{font-size:13px;font-weight:600;color:var(--muted);margin-left:3px;}
+  .wcf-tile.result .wcf-val{color:#fff;}
+  .wcf-tile.result .wcf-val .un{color:#d9c4e0;}
+  .wcf-sub{font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .wcf-tile.result .wcf-sub{color:#cdb4d8;}
+  .wcf-op{display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--purple-mid);flex:0 0 14px;}
   /* three levers */
   .levers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-  .lever{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;}
-  .lever .anim{height:72px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .lever{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 16px;}
+  .lever .lv-tag{width:26px;height:26px;border-radius:7px;background:var(--purple);color:#fff;font-family:var(--fm);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
   .lever h4{margin:0 0 4px;font-size:14px;color:var(--purple);}
   .lever p{margin:0;font-size:13px;color:var(--ink);line-height:1.45;}
-  .lv-bars{display:flex;align-items:flex-end;gap:7px;height:64px;}
-  .lv-bar{width:15px;background:var(--purple);border-radius:3px 3px 0 0;transform-origin:bottom;animation:shrink 3.4s ease-in-out infinite;}
-  .lv-bar:nth-child(1){height:52px;} .lv-bar:nth-child(2){height:64px;animation-delay:.25s;} .lv-bar:nth-child(3){height:44px;animation-delay:.5s;}
-  @keyframes shrink{0%,100%{transform:scaleY(1);}50%{transform:scaleY(.5);}}
-  .lv-track{position:relative;width:82%;height:12px;background:var(--mist);border-radius:6px;}
-  .lv-coin{position:absolute;top:-4px;width:20px;height:20px;border-radius:50%;background:var(--up);box-shadow:0 2px 5px rgba(31,143,104,.35);animation:slidein 3.4s ease-in-out infinite;}
-  @keyframes slidein{0%{left:calc(100% - 16px);}55%,100%{left:-4px;}}
-  .lv-cal{display:flex;gap:6px;position:relative;padding-top:16px;}
-  .lv-cal span{width:14px;height:14px;border-radius:3px;background:var(--mist);}
-  .lv-cal span.due{background:var(--purple);}
-  .lv-pay{position:absolute;top:-4px;left:0;width:18px;height:18px;border-radius:50%;background:var(--magenta);box-shadow:0 2px 5px rgba(224,4,78,.35);animation:holdpay 4s ease-in-out infinite;}
-  @keyframes holdpay{0%,45%{left:0;}75%,100%{left:80px;}}
   /* rank rule + return */
   .rankrule{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
   .rankchip{background:var(--mist);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--ink);}
@@ -261,15 +270,38 @@
   @media(max-width:760px){.levers{grid-template-columns:1fr;}.returnbox{grid-template-columns:1fr;}}
   @media(prefers-reduced-motion:reduce){
     .reveal{opacity:1;transform:none;transition:none;}
-    .cashgap .coin,.cashgap .band,.lv-bar,.lv-coin,.lv-pay{animation:none;}
-    .cashgap .coin{opacity:0;}
+  }
+  /* print-only report header, hidden on screen */
+  .printhead{display:none;}
+  /* ===== print: executive report pack ===== */
+  @media print{
+    @page{margin:14mm 12mm;}
+    body{background:#fff;}
+    .brand,.top,.side,.mtoggle,.alertwrap,.mast-help,#mastExport,.coc,.user,.mast-div,.statuspill{display:none !important;}
+    .shell{display:block;min-height:0;}
+    .main{max-width:none;padding:0;overflow:visible;grid-area:auto;}
+    .reveal{opacity:1 !important;transform:none !important;}
+    /* show only the executive pack, stacked and paginated */
+    .panel{display:none !important;}
+    #dashboard,#actions,#trend,#peers{display:block !important;break-inside:auto;}
+    #actions,#trend,#peers{break-before:page;}
+    .printhead{display:block;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid var(--purple);}
+    .printhead .ph-brand{font-size:12px;font-weight:700;color:var(--magenta);letter-spacing:.02em;}
+    .printhead .ph-title{font-size:22px;font-weight:800;color:var(--purple);letter-spacing:-.02em;margin-top:2px;}
+    .printhead .ph-meta{font-family:var(--fm);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+    .phead .crumb{display:none;}
+    .card,.kpi,.figure,table,.note{break-inside:avoid;}
+    .eyebrow{break-after:avoid;}
+    /* neutralise sticky and hover chrome in print */
+    *{box-shadow:none !important;}
+    a[data-goto],button{color:inherit;}
   }
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <div class="brand">
+  <div class="brand" data-goto="dashboard" role="button" tabindex="0" title="Go to dashboard">
     <div class="name">Evalueserve <b>Insightsfirst</b></div>
     <small>Working Capital Efficiency Tool</small>
   </div>
@@ -279,9 +311,19 @@
     <span class="ctx" id="ctx">Start here / How It Works</span>
     <div class="mast-r">
       <span class="statuspill" title="Demo dataset. A live build shows your data source and last sync time."><span class="dot"></span><b>Demo data</b> &middot; synced 03:10</span>
-      <button class="icobtn" id="mastAlerts" title="Data health alerts" data-goto="health">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <span class="badge" id="alertCount">0</span>
+      <div class="alertwrap">
+        <button class="icobtn" id="mastAlerts" title="Data health flags" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="badge" id="alertCount">0</span>
+        </button>
+        <div class="alertmenu" id="alertMenu" hidden>
+          <div class="am-head">Data health flags <span id="amCount"></span></div>
+          <div class="am-list" id="amList"></div>
+          <button class="am-all" data-goto="health">Open Data Health &rarr;</button>
+        </div>
+      </div>
+      <button class="icobtn" id="mastExport" title="Export report (PDF)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
       </button>
       <button class="icobtn mast-help" id="mastHelp" title="How it works" data-goto="how">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -331,6 +373,7 @@
     <div class="grp">Synthesis</div>
     <div class="nav">
       <button data-tab="actions">Action List<span class="dotmark" title="ranked initiatives"></span></button>
+      <button data-tab="trend">Trend vs History</button>
       <button data-tab="peers">Peer Comparison</button>
     </div>
     <div class="grp">Assurance</div>
@@ -342,6 +385,12 @@
   </nav>
 
   <main class="main">
+
+  <div class="printhead" aria-hidden="true">
+    <div class="ph-brand">Evalueserve Insightsfirst</div>
+    <div class="ph-title">Working Capital Efficiency Report</div>
+    <div class="ph-meta"><span id="phDate"></span> &middot; Demo data &middot; Cost of capital <span id="phCoc"></span>%</div>
+  </div>
 
   <!-- ================= DASHBOARD ================= -->
   <section class="panel" id="dashboard">
@@ -554,6 +603,15 @@
         <div class="note calm" style="margin-top:12px;"><span class="l">Method</span>An early-payment discount is turned into a yearly rate and checked against your cost of capital. Offer it only when it costs less than the cash it brings in sooner. Yearly rate = (discount / (1 &minus; discount)) x (365 / days saved).</div>
       </div>
     </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="hd"><h3>Upstream levers: credit policy and collections cadence</h3></div>
+      <div class="bd prose">
+        <p>This tab manages receivables after they exist. Two established levers act earlier and are advisory here, not scored, because they need policy inputs the sample does not carry.</p>
+        <p><strong>Credit policy.</strong> The strongest control on DSO is the decision to extend credit at all. Scoring customers and setting limits before terms are granted prevents overdue balances rather than chasing them. A live build can hold a credit limit and a score per account.</p>
+        <p><strong>Collections cadence.</strong> A defined dunning sequence, reminders before due, structured follow-up after, and clear escalation, shortens DSO more reliably than ad hoc chasing. The cash-at-risk ranking above tells the cadence where to start.</p>
+      </div>
+    </div>
   </section>
 
   <!-- ================= PAYABLES ================= -->
@@ -588,6 +646,17 @@
       <div class="hd"><h3>Second-order effect: stretching DPO</h3></div>
       <div class="bd">
         <div class="note"><span class="l">Coupled decision</span>Paying a supplier later to hold cash longer can make that supplier slower or less reliable. That forces you to hold more stock as a buffer, which puts cash back into inventory. So part of what you save on payments, you give back on stock. The tool reads each supplier's own delivery record to show the net effect, rather than guessing.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="hd"><h3>Supply-chain finance: where a gain becomes hidden debt</h3></div>
+      <div class="bd prose">
+        <p><strong>The lever.</strong> Supply-chain finance and dynamic discounting let you extend your own payment terms while a bank pays the supplier early. It can widen DPO without hurting the supplier, and dynamic discounting can capture discounts on your spare cash. Used within the normal trade cycle, it is a legitimate option.</p>
+        <p><strong>Where it turns.</strong> Once terms stretch well past the normal cycle for the industry, the liability stops behaving like trade payables and starts behaving like borrowing. Reported DPO improves, but the improvement is financed debt, not operating discipline. A trend that looks like progress can be a leverage decision in disguise.</p>
+        <p><strong>What the standards now require.</strong> Both IFRS and US GAAP require supplier-finance programmes to be classified by their substance and disclosed, so that the size, the terms, and the liquidity risk are visible rather than buried in payables.</p>
+        <p><strong>Concentration risk.</strong> Routing a large share of payables through one financier concentrates the liability. If the firm hits difficulty, that can force a large payment to a single counterparty at once.</p>
+        <p><strong>Tool stance.</strong> This is advisory, not a scored move. If a future setting models extending DPO through such a programme, the tool flags the point at which the gain is really borrowing, so a wider cycle is not read as efficiency.</p>
       </div>
     </div>
   </section>
@@ -632,7 +701,48 @@
     </div>
   </section>
 
-  <!-- ================= PEERS ================= -->
+  <!-- ================= TREND VS HISTORY ================= -->
+  <section class="panel" id="trend">
+    <div class="phead">
+      <div class="crumb">Synthesis / Trend vs History</div>
+      <h1>Trend against your own history</h1>
+      <p class="sub">How your cash cycle has moved over the periods you hold, measured the same way each time. Current is the latest period. Your own best level is the realistic floor. Lower is not automatically better: past a point, cutting the cycle starts to cost sales and supplier reliability.</p>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <button id="tgYoY" class="tgl on" data-basis="yoy" style="font-family:var(--fm);font-size:11px;letter-spacing:.04em;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--purple);color:#fff;cursor:pointer;">Year on year</button>
+      <button id="tgQoQ" class="tgl" data-basis="qoq" style="font-family:var(--fm);font-size:11px;letter-spacing:.04em;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--mist);color:var(--purple);cursor:pointer;">Quarter on quarter</button>
+      <span id="tgNote" style="font-family:var(--fm);font-size:11px;color:var(--ink-3);align-self:center;margin-left:6px;"></span>
+    </div>
+
+    <div class="grid g4">
+      <div class="kpi"><div class="k">Current CCC</div><div class="v" id="trCCC">0<span class="un">days</span></div><div class="foot"><span class="mut" id="trCurP"></span></div></div>
+      <div class="kpi"><div class="k">Your best CCC (floor)</div><div class="v good" id="trBest">0<span class="un">days</span></div><div class="foot"><span class="mut" id="trBestP"></span></div></div>
+      <div class="kpi"><div class="k">Change on basis</div><div class="v" id="trChg">0<span class="un">days</span></div><div class="foot"><span class="mut" id="trChgL"></span></div></div>
+      <div class="kpi"><div class="k">Band position</div><div class="v" id="trBand">0<span class="un">days</span></div><div class="foot"><span class="mut">above your floor</span></div></div>
+    </div>
+
+    <div class="eyebrow">Cycle metrics over time (raw)</div>
+    <div class="card"><div class="bd"><div id="trendChart"></div><div id="trendLegend" style="font-family:var(--fm);font-size:11px;color:var(--ink-3);margin-top:8px;"></div></div></div>
+
+    <div class="eyebrow">What moved the cycle</div>
+    <div class="card"><div class="bd tight">
+      <div style="overflow-x:auto;">
+      <table class="t" id="bridgeTable">
+        <thead><tr><th>Component</th><th class="num">Then</th><th class="num">Now</th><th class="num">Change</th><th>Effect on CCC</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <div class="note calm" style="margin-top:12px;"><span class="l">Read</span>CCC is DIH plus DSO minus DPO, so the change in CCC is exactly the change in its three parts. This shows which lever moved the cycle, not just that it moved.</div>
+    </div></div>
+
+    <div class="card"><div class="bd">
+      <div class="note calm"><span class="l">Seasonal</span>Quarters are not like-for-like. Inventory builds before turnarounds, so a third-quarter rise in days inventory can be operational, not a loss of discipline. Year-on-year same-quarter comparison removes this by construction; quarter-on-quarter does not. Raw figures are always shown. No number here is seasonally overwritten.</div>
+      <div class="note calm" style="margin-top:10px;"><span class="l">Band</span>The floor is your own best achieved level, evidenced from your history. The ceiling is not a computed number: it is the point where cutting inventory buffers or tightening customer and supplier terms starts to risk stockouts, lost sales, or strained supply. Treat the target as a band, not zero.</div>
+    </div></div>
+  </section>
+
+  <!-- ================= PEER COMPARISON ================= -->
   <section class="panel" id="peers">
     <div class="phead">
       <div class="crumb">Synthesis / Peer Comparison</div>
@@ -642,13 +752,13 @@
 
     <div class="grid g4">
       <div class="kpi"><div class="k">Your CCC</div><div class="v" id="peCCC">79<span class="un">days</span></div><div class="foot"><span class="mut">DIH 62 · DSO 58 · DPO 41</span></div></div>
+      <div class="kpi"><div class="k">Top-quartile CCC</div><div class="v good" id="peTopQ">0<span class="un">days</span></div><div class="foot"><span class="mut">the credible target</span></div></div>
       <div class="kpi"><div class="k">Peer median CCC</div><div class="v" id="peMed">0<span class="un">days</span></div><div class="foot"><span class="mut" id="peMedGap">gap vs median</span></div></div>
-      <div class="kpi"><div class="k">Best-in-class CCC</div><div class="v good" id="peBest">0<span class="un">days</span></div><div class="foot"><span class="delta bad" id="peBestGap"></span></div></div>
-      <div class="kpi"><div class="k">Cash gap vs best</div><div class="v hot" id="peCash">$0</div><div class="foot"><span class="mut">days x daily cash flow</span></div></div>
+      <div class="kpi"><div class="k">Opportunity vs top-quartile</div><div class="v hot" id="peCash">$0</div><div class="foot"><span class="mut" id="peCashN">days x daily cash flow</span></div></div>
     </div>
 
     <div class="eyebrow">Cash conversion cycle by peer</div>
-    <div class="card"><div class="bd" id="peerBars"></div></div>
+    <div class="card"><div class="bd"><div id="peerRef" style="font-family:var(--fm);font-size:11px;letter-spacing:.03em;color:var(--ink-3);margin-bottom:10px;"></div><div id="peerBars"></div></div></div>
 
     <div class="eyebrow">Component detail</div>
     <div class="card"><div class="bd tight">
@@ -658,7 +768,7 @@
         <tbody></tbody>
       </table>
       </div>
-      <div class="note calm" style="margin-top:12px;"><span class="l">Method</span>You choose the peers, so the comparison is never against the wrong firms. Cash for each day of difference = yearly revenue / 365, the cash tied up or freed per day of the cycle.</div>
+      <div class="note calm" style="margin-top:12px;"><span class="l">Method</span>You choose the peers, so the comparison is never against the wrong firms. Three reference points: median is normal good, top-quartile is the credible target and the gap to it is the quantified opportunity, best-in-class is the frontier. Cash for each day of difference = yearly revenue / 365.</div>
     </div></div>
   </section>
 
@@ -706,6 +816,15 @@
       </div>
     </div></div>
 
+    <div class="eyebrow">Historical periods (self-comparison intake)</div>
+    <div class="card"><div class="bd tight">
+      <div class="mini" style="margin-bottom:8px;">Six sourced fields per period drive the whole trend. Revenue and cost of goods come from the income statement; the three balances are period-end balance-sheet figures. The days measures are derived, not sourced.</div>
+      <div style="overflow-x:auto;">
+      <table class="t"><thead><tr><th>period</th><th class="num">revenue</th><th class="num">cogs</th><th class="num">inventory</th><th class="num">receivables</th><th class="num">payables</th><th class="num">DIH</th><th class="num">DSO</th><th class="num">DPO</th><th class="num">CCC</th></tr></thead><tbody id="srcHist"></tbody></table>
+      </div>
+      <div class="note calm" style="margin-top:12px;"><span class="l">Source map</span>Revenue and COGS from the income statement per period. Inventory, receivables and payables are period-end balances from the balance sheet. One entity, one accounting basis, one currency across all periods. The latest period is the current headline figure.</div>
+    </div></div>
+
     <div class="eyebrow">Raw records: inventory master</div>
     <div class="card"><div class="bd tight"><div style="overflow-x:auto;">
       <table class="t"><thead><tr><th>material</th><th>description</th><th class="num">std_cost</th><th class="num">annual_issue_qty</th><th class="num">unrestr_qty</th><th class="num">plnd_deliv_time</th><th class="num">last_issue_days</th></tr></thead><tbody id="srcInv"></tbody></table>
@@ -738,10 +857,12 @@
 
     <div class="grid g4">
       <div class="kpi"><div class="k">Records flagged</div><div class="v hot" id="hlN">0</div><div class="foot"><span class="mut">on the sample</span></div></div>
-      <div class="kpi"><div class="k">SKUs on placeholder lead time</div><div class="v" id="hlPlace">0</div><div class="foot"><span class="mut">99 or 999 day defaults</span></div></div>
-      <div class="kpi"><div class="k">Cash effect if corrected</div><div class="v" id="hlCash">$0</div><div class="foot"><span class="mut">buffer released</span></div></div>
-      <div class="kpi"><div class="k">Checks run</div><div class="v">7</div><div class="foot"><span class="mut">on every load</span></div></div>
+      <div class="kpi"><div class="k">SKUs on placeholder lead time</div><div class="v" id="hlPlace">0</div><div class="foot"><span class="mut"><b id="hlPlaceCash">$0</b> buffer overstated</span></div></div>
+      <div class="kpi"><div class="k">Cash across all flags</div><div class="v" id="hlCash">$0</div><div class="foot"><span class="mut">all flags, if corrected</span></div></div>
+      <div class="kpi"><div class="k">Checks run</div><div class="v">11</div><div class="foot"><span class="mut">on every load</span></div></div>
     </div>
+
+    <div class="note calm" style="margin-top:12px;"><span class="l">Reading these</span>The placeholder card shows only the buffer that one SKU overstates, sized against a 14-day measured lead time. The all-flags card is the total cash across every flag, most of it a duplicate-invoice fault on the receivables side. They are separate figures and should not be added to the cash the action list frees.</div>
 
     <div class="eyebrow">Flagged records</div>
     <div class="card"><div class="bd tight">
@@ -766,6 +887,11 @@
           <tr><td>Invoice with no due date</td><td>Cannot be aged, so it breaks the collection and payment measures.</td></tr>
           <tr><td>Duplicate invoice numbers</td><td>Counts the same amount twice and overstates what is owed.</td></tr>
           <tr><td>Movement with no balance, or balance with no movement</td><td>Broken record link; days-of-stock cannot be trusted.</td></tr>
+          <tr><td colspan="2" style="background:var(--mist);font-family:var(--fm);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--purple-mid);">Trend series checks</td></tr>
+          <tr><td>Period sequence complete</td><td>A missing quarter or year breaks the trend and any year-on-year comparison.</td></tr>
+          <tr><td>Basis consistent across periods</td><td>Mixing quarterly and annual, or changing the annualisation, produces a false trend.</td></tr>
+          <tr><td>Balance continuity</td><td>Each period&rsquo;s opening should equal the prior close. A break signals a restatement or reclassification.</td></tr>
+          <tr><td>Discontinuity flag</td><td>Accounting change, acquisition, disposal or currency change breaks comparability; the series is annotated, not trended through.</td></tr>
         </tbody>
       </table>
       <div class="note" style="margin-top:12px;"><span class="l">No silent correction</span>Faults are shown and sized, never fixed quietly. Whether to correct the source is your call, made with the effect in view. Every figure traces back to these records.</div>
@@ -852,7 +978,22 @@
       </div></div>
     </div>
 
-    <div class="eyebrow">Change control and limits</div>
+    <div class="eyebrow">Historical comparison conventions</div>
+    <div class="grid g2">
+      <div class="card"><div class="hd"><h3>Locked conventions for the trend</h3></div><div class="bd prose">
+        <p>The trend view compares each period on a fixed basis, stated here so the series is auditable rather than implied.</p>
+        <p><strong>Period basis.</strong> Quarterly by default, going back eight quarters, or annual over two years where that is the reporting cadence. Where the firm is younger, whatever exists, marked as a short series. Days measures annualise the period flow, so bases are never mixed on one chart.</p>
+        <p><strong>Balance convention.</strong> Period-end balances. A single reporting date can be unrepresentative, so the trend is read for direction, not a single point. Two-point averaging is the deployment upgrade where clean opening balances exist.</p>
+        <p><strong>Seasonal method.</strong> Year-on-year same-quarter comparison removes seasonality by construction and is the headline. Quarter-on-quarter is shown as momentum and does not remove it. Raw figures are always shown; no figure is seasonally overwritten.</p>
+      </div></div>
+      <div class="card"><div class="hd"><h3>Discontinuity rule</h3></div><div class="bd prose">
+        <p><strong>Comparability assumes one entity, one accounting basis.</strong> A trend is only honest where the series is consistent.</p>
+        <p><strong>Breaks are annotated, not smoothed over.</strong> A restatement, an accounting-policy change, an acquisition or disposal, or a currency change breaks the series. These are flagged on the trend rather than silently carried through, so a step in the line is not read as performance.</p>
+        <p><strong>Current equals the latest period.</strong> The headline figures across the tool are the most recent period in the history. History is the same engine run once per period.</p>
+      </div></div>
+    </div>
+
+
     <div class="grid g2">
       <div class="card"><div class="hd"><h3>Change control</h3></div><div class="bd prose">
         <p><strong>Versioned method.</strong> The formulas and thresholds are versioned. A change to any of them is recorded, dated, and signed off before release.</p>
@@ -878,37 +1019,50 @@
 
     <div class="eyebrow reveal">The cash gap</div>
     <div class="card reveal"><div class="bd">
-      <p class="hiw-say" style="margin-top:0;">You pay for stock, hold it, sell it, then wait to get paid. Meanwhile you delay paying your suppliers. The days in between are cash you have funded and cannot use. The tool measures that gap and shows how to shorten it.</p>
-      <div class="cashgap">
-        <div class="axis"></div>
-        <div class="band"></div>
-        <div class="caplab">Cash tied up</div>
-        <div class="mark out" style="left:20%;"></div>
-        <div class="mark" style="left:50%;"></div>
-        <div class="mark inc" style="left:80%;"></div>
-        <div class="coin"></div>
-        <div class="lab" style="left:20%;">Pay for stock<span class="s">cash out</span></div>
-        <div class="lab" style="left:50%;">Sell it<span class="s">no cash yet</span></div>
-        <div class="lab" style="left:80%;">Get paid<span class="s">cash in</span></div>
+      <p class="hiw-say" style="margin-top:0;">You pay for stock, hold it, sell it, then wait to get paid. Along the way you take credit from your own suppliers. The days left over are cash you have funded and cannot use. The tool measures that gap and shows how to shorten it.</p>
+      <div class="wcflow">
+        <div class="wcf-tile">
+          <div class="wcf-lbl">Days holding stock</div>
+          <div class="wcf-val" id="hiwDih">&mdash;</div>
+          <div class="wcf-sub">Bought and sitting</div>
+        </div>
+        <div class="wcf-op">+</div>
+        <div class="wcf-tile">
+          <div class="wcf-lbl">Days waiting to collect</div>
+          <div class="wcf-val" id="hiwDso">&mdash;</div>
+          <div class="wcf-sub">Sold, not yet paid</div>
+        </div>
+        <div class="wcf-op">&minus;</div>
+        <div class="wcf-tile">
+          <div class="wcf-lbl">Days of supplier credit</div>
+          <div class="wcf-val" id="hiwDpo">&mdash;</div>
+          <div class="wcf-sub">You pay later</div>
+        </div>
+        <div class="wcf-op">=</div>
+        <div class="wcf-tile result">
+          <div class="wcf-lbl">The cash gap</div>
+          <div class="wcf-val" id="hiwCcc">&mdash;</div>
+          <div class="wcf-sub">Days your cash is tied up</div>
+        </div>
       </div>
     </div></div>
 
     <div class="eyebrow reveal">Three ways to free cash</div>
     <div class="levers reveal">
       <div class="lever">
-        <div class="anim"><div class="lv-bars"><div class="lv-bar"></div><div class="lv-bar"></div><div class="lv-bar"></div></div></div>
+        <div class="lv-tag">1</div>
         <h4>Hold less stock</h4>
-        <p>Keep what you need, not more. Money is not left sitting on a shelf.</p>
+        <p>Keep what the service level needs, not more. Cash does not sit on the shelf.</p>
       </div>
       <div class="lever">
-        <div class="anim"><div class="lv-track"><div class="lv-coin"></div></div></div>
+        <div class="lv-tag">2</div>
         <h4>Get paid sooner</h4>
-        <p>Chase the oldest, riskiest invoices first. Cash comes back faster.</p>
+        <p>Chase the oldest, riskiest invoices first. Cash returns faster.</p>
       </div>
       <div class="lever">
-        <div class="anim"><div class="lv-cal"><span></span><span></span><span></span><span></span><span class="due"></span><div class="lv-pay"></div></div></div>
+        <div class="lv-tag">3</div>
         <h4>Pay on time, not early</h4>
-        <p>Hold your cash to the due date, unless paying early pays you back.</p>
+        <p>Hold cash to the due date, unless an early-payment discount pays you back more.</p>
       </div>
     </div>
 
@@ -950,6 +1104,15 @@
       <p>Lost sales from running out of stock, from credit that is too tight, or from paying suppliers so late they raise prices. The data cannot size these, so the tool warns instead of inventing a figure that would mislead.</p>
       <h4>Left as a setting you control</h4>
       <p>The cost of the cash you tie up. You set the rate, and every figure that depends on it updates.</p>
+    </div></div>
+
+    <div class="eyebrow reveal">Reading the cycle over time</div>
+    <div class="card reveal"><div class="bd prose">
+      <p style="margin-top:0;">The headline figures are the latest period. The Trend view runs the same engine on each past period, so you can see direction, not just today's level.</p>
+      <h4>Lower is not automatically better</h4>
+      <p>A shorter cash cycle usually lifts return, but only up to a point. Cut inventory buffers or tighten terms too far and you start losing sales and straining suppliers. The tool frames the target as a band: the floor is your own best achieved level, the ceiling is where the risk starts. It is not a race to zero.</p>
+      <h4>Compared the same way each time</h4>
+      <p>Year-on-year comparison sets each quarter against the same quarter last year, which removes seasonal swings like a pre-turnaround stock build. Quarter-on-quarter shows recent momentum. Both are shown, and no figure is seasonally adjusted away.</p>
     </div></div>
 
     <div class="eyebrow reveal">The exact working, for anyone who wants it</div>
@@ -1089,9 +1252,63 @@
     {n:'Peer B',dih:58,dso:61,dpo:47},
     {n:'Peer C',dih:41,dso:46,dpo:32},
     {n:'Peer D',dih:71,dso:66,dpo:49},
-    {n:'Peer E',dih:55,dso:57,dpo:43}
+    {n:'Peer E',dih:55,dso:57,dpo:43},
+    {n:'Peer F',dih:52,dso:54,dpo:38},
+    {n:'Peer G',dih:63,dso:60,dpo:44},
+    {n:'Peer H',dih:45,dso:50,dpo:34},
+    {n:'Peer I',dih:68,dso:63,dpo:46},
+    {n:'Peer J',dih:50,dso:55,dpo:40},
+    {n:'Peer K',dih:60,dso:62,dpo:45}
   ];
   PEERS.forEach(function(p){ p.ccc = p.dih + p.dso - p.dpo; });
+
+  // ---- Self history: period-end balances (sourced); days derived by the engine ----
+  // Latest period ties to the FIRM anchor. Balances are the primary figure; days follow.
+  var HISTORY = [
+    {p:'2024 Q3', rev:13800000, cogs:9900000, inv:7590000, ar:9680000, ap:4010000},
+    {p:'2024 Q4', rev:14200000, cogs:10100000, inv:7310000, ar:9490000, ap:4210000},
+    {p:'2025 Q1', rev:13900000, cogs:9900000, inv:6940000, ar:9140000, ap:4230000},
+    {p:'2025 Q2', rev:14300000, cogs:10100000, inv:6970000, ar:9250000, ap:4430000},
+    {p:'2025 Q3', rev:14000000, cogs:10000000, inv:7450000, ar:9210000, ap:4380000},
+    {p:'2025 Q4', rev:14600000, cogs:10300000, inv:7110000, ar:9280000, ap:4630000},
+    {p:'2026 Q1', rev:14400000, cogs:10200000, inv:6820000, ar:9000000, ap:4580000},
+    {p:'2026 Q2', rev:14500000, cogs:10250000, inv:6960000, ar:9220000, ap:4610000}
+  ];
+  var HIST_BASIS = 'quarterly';   // period basis (Governance-locked)
+  var HIST_ANNUALISE = 4;         // annualisation factor for the days measures
+  // Derive days per period. Period-end balance convention (Governance-locked).
+  HISTORY.forEach(function(h){
+    var revA = h.rev*HIST_ANNUALISE, cogsA = h.cogs*HIST_ANNUALISE;
+    h.dih = Math.round(h.inv/cogsA*365);
+    h.dso = Math.round(h.ar/revA*365);
+    h.dpo = Math.round(h.ap/cogsA*365);
+    h.oc  = h.dih + h.dso;
+    h.ccc = h.dih + h.dso - h.dpo;
+    h.nwc = h.inv + h.ar - h.ap;
+    h.nwcPct = h.nwc/revA;   // NWC as share of annualised revenue
+  });
+  function histCurrent(){ return HISTORY[HISTORY.length-1]; }
+  function histOwnBest(metric){   // best (lowest) achieved level of a cycle metric
+    return Math.min.apply(null, HISTORY.map(function(h){ return h[metric]; }));
+  }
+  function histYoY(metric){       // latest vs same quarter one year back (4 periods)
+    var n=HISTORY.length; if(n<5) return null;
+    return HISTORY[n-1][metric] - HISTORY[n-5][metric];
+  }
+  function histQoQ(metric){       // latest vs prior quarter
+    var n=HISTORY.length; if(n<2) return null;
+    return HISTORY[n-1][metric] - HISTORY[n-2][metric];
+  }
+  // Seasonal factor per calendar quarter: mean deviation of a metric from its own series mean,
+  // grouped by quarter label. Shown only, never used to overwrite raw. Needs >=8 periods.
+  function seasonalFactors(metric){
+    if(HISTORY.length < 8) return null;
+    var mean = HISTORY.reduce(function(t,h){return t+h[metric];},0)/HISTORY.length;
+    var byQ = {};
+    HISTORY.forEach(function(h){ var q=h.p.split(' ')[1]; (byQ[q]=byQ[q]||[]).push(h[metric]-mean); });
+    var f={}; Object.keys(byQ).forEach(function(q){ f[q]=byQ[q].reduce(function(t,x){return t+x;},0)/byQ[q].length; });
+    return f;
+  }
 
   // ================= RENDER HELPERS =================
   function el(html){
@@ -1239,12 +1456,19 @@
       nwc: items.reduce(function(t,a){return t+a.nwc;},0)
     };
   }
+  function pctile(sorted, p){   // linear-interpolation percentile on an ascending array
+    if(!sorted.length) return null;
+    var idx=(sorted.length-1)*p, lo=Math.floor(idx), hi=Math.ceil(idx);
+    if(lo===hi) return sorted[lo];
+    return sorted[lo] + (sorted[hi]-sorted[lo])*(idx-lo);
+  }
   function peerStats(){
     var self=PEERS.filter(function(p){return p.self;})[0];
     var others=PEERS.filter(function(p){return !p.self;}).map(function(p){return p.ccc;}).sort(function(a,b){return a-b;});
     var best=Math.min.apply(null,others);
-    var median=others[Math.floor(others.length/2)];
-    return {self:self.ccc, best:best, median:median, daily:FIRM.revenue/365};
+    var median=Math.round(pctile(others,0.5));
+    var topQ=Math.round(pctile(others,0.25));   // 25th pct of CCC: lower is better
+    return {self:self.ccc, best:best, median:median, topQ:topQ, daily:FIRM.revenue/365};
   }
   function setV(id, num, unit){ var e=document.getElementById(id); if(e) e.innerHTML = num + (unit?'<span class="un">'+unit+'</span>':''); }
 
@@ -1255,7 +1479,8 @@
     var ps = peerStats();
     // headline KPIs, all engine-driven
     setV('kCCC', FIRM.ccc, 'days');
-    document.getElementById('kCCCd').textContent = '+'+(ps.self-ps.best)+'d vs best peer';
+    var ownBest = histOwnBest('ccc');
+    document.getElementById('kCCCd').innerHTML = (FIRM.ccc<=ownBest ? 'at your best level ('+ownBest+'d)' : '+'+(FIRM.ccc-ownBest)+'d vs your best ('+ownBest+'d)');
     setV('kDIH', FIRM.dih, 'days');
     setV('kDSO', FIRM.dso, 'days');
     setV('kDPO', FIRM.dpo, 'days');
@@ -1368,7 +1593,7 @@
     var cards = document.getElementById('calcCards');
     cards.innerHTML =
         '<div class="kpi"><div class="k">Class</div><div class="v"><span class="tag '+s.cls.toLowerCase()+'" style="font-size:13px;">'+s.cls+'</span></div></div>'
-      + card('Order quantity', s.demand>0?Math.round(eoq):'&mdash;', s.demand>0?'u':'')
+      + card('Order quantity (EOQ)', s.demand>0?Math.round(eoq):'&mdash;', s.demand>0?'u':'')
       + card('Unit cost', fmt.money0(s.cost))
       + card('Days of supply', dos===null?'&mdash;':fmt.n(dos), dos===null?'':'d', dos!==null&&dos>OVER_DAYS?'hot':'')
       + card('Turns', turns.toFixed(1), 'x')
@@ -1587,25 +1812,102 @@
   }
 
   // ---- Peers ----
+  var TREND_BASIS = 'yoy';
+  function drawTrendChart(){
+    var W=720,H=300,padL=42,padR=14,padT=16,padB=34;
+    var n=HISTORY.length, plotW=W-padL-padR, plotH=H-padT-padB;
+    var yMin=30,yMax=100, ySpan=yMax-yMin;
+    function X(i){ return padL + (n<=1?0:(plotW*i/(n-1))); }
+    function Y(v){ return padT + plotH*(1-(v-yMin)/ySpan); }
+    var series=[
+      {k:'ccc', c:'var(--purple)', w:2.6, dot:true, name:'CCC'},
+      {k:'dih', c:'var(--purple-mid)', w:1.4, dot:false, name:'DIH'},
+      {k:'dso', c:'var(--up)', w:1.4, dot:false, name:'DSO'},
+      {k:'dpo', c:'var(--muted)', w:1.4, dot:false, name:'DPO'}
+    ];
+    var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-width:720px;">';
+    // y gridlines
+    [40,60,80,100].forEach(function(g){ var y=Y(g); svg+='<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="var(--line)" stroke-width="1"/>'+
+      '<text x="'+(padL-6)+'" y="'+(y+3)+'" text-anchor="end" font-family="var(--fm)" font-size="10" fill="var(--muted)">'+g+'</text>'; });
+    // x labels
+    HISTORY.forEach(function(h,i){ svg+='<text x="'+X(i)+'" y="'+(H-padB+18)+'" text-anchor="middle" font-family="var(--fm)" font-size="9.5" fill="var(--muted)">'+h.p+'</text>'; });
+    // series lines
+    series.forEach(function(s){
+      var d=HISTORY.map(function(h,i){ return (i?'L':'M')+X(i).toFixed(1)+' '+Y(h[s.k]).toFixed(1); }).join(' ');
+      svg+='<path d="'+d+'" fill="none" stroke="'+s.c+'" stroke-width="'+s.w+'"/>';
+    });
+    // CCC dots + own-best ring + Q3 seasonal marks
+    var ownBest=histOwnBest('ccc');
+    HISTORY.forEach(function(h,i){
+      svg+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(h.ccc).toFixed(1)+'" r="3" fill="var(--purple)"/>';
+      if(h.ccc===ownBest) svg+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(h.ccc).toFixed(1)+'" r="6" fill="none" stroke="var(--up)" stroke-width="2"/>';
+      if(h.p.indexOf('Q3')>-1) svg+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(h.dih).toFixed(1)+'" r="2.5" fill="var(--purple-mid)"/>';
+    });
+    svg+='</svg>';
+    document.getElementById('trendChart').innerHTML=svg;
+    document.getElementById('trendLegend').innerHTML=
+      '<span style="color:var(--purple);font-weight:700;">&#9644; CCC</span> &nbsp; '+
+      '<span style="color:var(--purple-mid);">&#9644; DIH</span> &nbsp; '+
+      '<span style="color:var(--up);">&#9644; DSO</span> &nbsp; '+
+      '<span style="color:var(--muted);">&#9644; DPO</span> &nbsp; &nbsp; '+
+      '<span style="color:var(--up);">&#9711; your best CCC</span>';
+  }
+  function renderTrend(){
+    var cur=histCurrent(), ownBest=histOwnBest('ccc');
+    var ownBestP=HISTORY.filter(function(h){return h.ccc===ownBest;})[0].p;
+    document.getElementById('trCCC').innerHTML=cur.ccc+'<span class="un">days</span>';
+    document.getElementById('trCurP').textContent=cur.p+' (latest)';
+    document.getElementById('trBest').innerHTML=ownBest+'<span class="un">days</span>';
+    document.getElementById('trBestP').textContent=ownBestP;
+    var band=cur.ccc-ownBest;
+    document.getElementById('trBand').innerHTML=(band<=0?'at floor':'+'+band)+'<span class="un">days</span>';
+
+    var basis=TREND_BASIS, chg, thenRec;
+    if(basis==='yoy' && HISTORY.length>=5){ chg=histYoY('ccc'); thenRec=HISTORY[HISTORY.length-5]; }
+    else { basis='qoq'; chg=histQoQ('ccc'); thenRec=HISTORY[HISTORY.length-2]; }
+    document.getElementById('trChg').innerHTML=(chg>0?'+':'')+chg+'<span class="un">days</span>';
+    document.getElementById('trChgL').textContent='vs '+thenRec.p+(chg<0?' (improved)':(chg>0?' (worse)':' (flat)'));
+    document.getElementById('tgNote').textContent = basis==='yoy' ? 'same quarter last year, seasonality removed' : 'prior quarter, seasonality not removed';
+
+    document.getElementById('tgYoY').style.background = basis==='yoy'?'var(--purple)':'var(--mist)';
+    document.getElementById('tgYoY').style.color = basis==='yoy'?'#fff':'var(--purple)';
+    document.getElementById('tgQoQ').style.background = basis==='qoq'?'var(--purple)':'var(--mist)';
+    document.getElementById('tgQoQ').style.color = basis==='qoq'?'#fff':'var(--purple)';
+
+    drawTrendChart();
+
+    var tb=document.querySelector('#bridgeTable tbody'); tb.innerHTML='';
+    var now=cur, then=thenRec;
+    [['DIH','dih',1],['DSO','dso',1],['DPO','dpo',-1]].forEach(function(r){
+      var d=now[r[1]]-then[r[1]], eff=d*r[2];
+      tb.appendChild(el('<tr><td>'+r[0]+'</td><td class="num">'+then[r[1]]+'</td><td class="num">'+now[r[1]]+'</td><td class="num">'+(d>0?'+':'')+d+'d</td><td>'+(eff===0?'<span class="mut">no change</span>':(eff<0?'<span class="good">cuts CCC '+(-eff)+'d</span>':'<span class="hot">adds CCC '+eff+'d</span>'))+'</td></tr>'));
+    });
+    var tCCC=now.ccc-then.ccc;
+    tb.appendChild(el('<tr style="border-top:2px solid var(--line);font-weight:700;"><td>CCC</td><td class="num">'+then.ccc+'</td><td class="num">'+now.ccc+'</td><td class="num">'+(tCCC>0?'+':'')+tCCC+'d</td><td>'+(tCCC<0?'<span class="good">improved '+(-tCCC)+'d</span>':(tCCC>0?'<span class="hot">worse '+tCCC+'d</span>':'<span class="mut">flat</span>'))+'</td></tr>'));
+  }
+
   function renderPeers(){
     var self=PEERS.filter(function(p){return p.self;})[0];
-    var others=PEERS.filter(function(p){return !p.self;});
-    var cccs=others.map(function(p){return p.ccc;}).sort(function(a,b){return a-b;});
-    var median=cccs[Math.floor(cccs.length/2)];
-    var best=Math.min.apply(null,cccs);
+    var others=PEERS.filter(function(p){return !p.self;}).map(function(p){return p.ccc;}).sort(function(a,b){return a-b;});
+    var best=Math.min.apply(null,others);
+    var median=Math.round(pctile(others,0.5));
+    var topQ=Math.round(pctile(others,0.25));
     var daily=REVENUE/365;
+    var oppDays=Math.max(0, self.ccc-topQ);
     document.getElementById('peCCC').textContent=self.ccc;
+    document.getElementById('peTopQ').textContent=topQ;
     document.getElementById('peMed').textContent=median;
     document.getElementById('peMedGap').textContent=(self.ccc-median>0?'+':'')+(self.ccc-median)+'d vs median';
-    document.getElementById('peBest').textContent=best;
-    document.getElementById('peBestGap').textContent='+'+(self.ccc-best)+'d behind best';
-    document.getElementById('peCash').textContent=fmt.money((self.ccc-best)*daily);
-    document.getElementById('kCCCd').textContent='+'+(self.ccc-best)+'d vs best peer';
+    document.getElementById('peCash').textContent=fmt.money(oppDays*daily);
+    document.getElementById('peCashN').textContent=oppDays+'d to top-quartile x daily cash';
+
+    document.getElementById('peerRef').innerHTML =
+      'Reference: best '+best+'d &middot; top-quartile '+topQ+'d (target) &middot; median '+median+'d &middot; you '+self.ccc+'d';
 
     var bars=document.getElementById('peerBars'); bars.innerHTML='';
     var maxCcc=Math.max.apply(null,PEERS.map(function(p){return p.ccc;}));
     PEERS.slice().sort(function(a,b){return a.ccc-b.ccc;}).forEach(function(p){
-      var color = p.self?'var(--magenta)':(p.ccc===best?'var(--up)':'var(--purple-mid)');
+      var color = p.self?'var(--magenta)':(p.ccc<=topQ?'var(--up)':'var(--purple-mid)');
       bars.appendChild(el('<div class="barrow"><span class="lbl" style="'+(p.self?'color:var(--magenta);font-weight:700;':'')+'">'+p.n+'</span><div class="track"><div class="fill" style="width:'+(p.ccc/maxCcc*100).toFixed(1)+'%;background:'+color+';"></div></div><span class="val">'+p.ccc+'d</span></div>'));
     });
 
@@ -1646,6 +1948,8 @@
 
     setTable('srcInv', SKUS.map(function(s){ return '<tr><td style="font-family:var(--fm);font-size:12px;">'+s.id+'</td><td>'+s.desc+'</td><td class="num">'+fmt.money0(s.cost)+'</td><td class="num">'+fmt.n(s.demand)+'</td><td class="num">'+fmt.n(s.onHand)+'</td><td class="num'+(s.placeholder?' hot':'')+'">'+s.lt+(s.placeholder?' !':'')+'</td><td class="num'+(s.idle>DEAD_DAYS?' hot':'')+'">'+s.idle+'</td></tr>'; }).join(''));
 
+    setTable('srcHist', HISTORY.map(function(h){ return '<tr><td style="font-family:var(--fm);font-size:12px;">'+h.p+'</td><td class="num">'+fmt.money0(h.rev)+'</td><td class="num">'+fmt.money0(h.cogs)+'</td><td class="num">'+fmt.money0(h.inv)+'</td><td class="num">'+fmt.money0(h.ar)+'</td><td class="num">'+fmt.money0(h.ap)+'</td><td class="num">'+h.dih+'</td><td class="num">'+h.dso+'</td><td class="num">'+h.dpo+'</td><td class="num" style="font-weight:700;">'+h.ccc+'</td></tr>'; }).join(''));
+
     setTable('srcRec', ACCTS.map(function(a){ var bal=a.cur+a.b1+a.b2+a.b3+a.b4; return '<tr><td>'+a.n+'</td><td class="num">'+fmt.money0(bal)+'</td><td class="num mut">'+fmt.money0(a.cur)+'</td><td class="num mut">'+fmt.money0(a.b1)+'</td><td class="num">'+fmt.money0(a.b2)+'</td><td class="num">'+fmt.money0(a.b3)+'</td><td class="num'+(a.b4>0?' hot':'')+'">'+fmt.money0(a.b4)+'</td></tr>'; }).join(''));
 
     setTable('srcPay', SUPP.map(function(s){ var terms=s.disc>0?(Math.round(s.disc*100)+'/'+s.dd+' net '+s.net):('net '+s.net); return '<tr><td>'+s.n+'</td><td class="num">'+fmt.money0(s.bal)+'</td><td class="mini">'+terms+'</td><td class="num">'+s.paid+'</td></tr>'; }).join(''));
@@ -1658,7 +1962,7 @@
       ['Dead-stock threshold',DEAD_DAYS+' days','Operations'],
       ['Overstock threshold',OVER_DAYS+' days','Operations'],
       ['Service targets','A 98% · B 95% · C 90%','Operations'],
-      ['Peer group','5 named peers','Strategy']
+      ['Peer group','12 named peers','Strategy']
     ];
     setTable('srcSettings', settings.map(function(x){ return '<tr><td style="font-weight:600;">'+x[0]+'</td><td class="num">'+x[1]+'</td><td class="mini">'+x[2]+'</td></tr>'; }).join(''));
   }
@@ -1671,32 +1975,56 @@
       if(s.placeholder){
         var Zc=Zsvc[Zclass[s.cls]]; var inflated=Zc*s.sd*Math.sqrt(s.lt); var real=Zc*s.sd*Math.sqrt(14);
         var cash=(inflated-real)*s.cost;
-        recs.push({r:s.id,check:'Placeholder lead time',field:'lead_time = '+s.lt,eff:'Inflates safety stock and reorder point',cash:cash});
+        recs.push({r:s.id,check:'Placeholder lead time',field:'lead_time = '+s.lt,eff:'Safety buffer is overstated',cash:cash});
       }
-      if(s.onHand<0) recs.push({r:s.id,check:'Negative stock quantity',field:'on_hand',eff:'Distorts days of stock and value sort',cash:0});
-      if(s.cost<=0) recs.push({r:s.id,check:'Zero or negative unit cost',field:'unit_cost',eff:'Breaks order-size and valuation',cash:0});
+      if(s.onHand<0) recs.push({r:s.id,check:'Negative stock quantity',field:'on_hand',eff:'Stock days and value sort are wrong',cash:0});
+      if(s.cost<=0) recs.push({r:s.id,check:'Zero or negative unit cost',field:'unit_cost',eff:'Order size and value cannot be worked out',cash:0});
     });
     // a couple of receivables-side illustrative flags
-    recs.push({r:'INV-48213',check:'Invoice with no due date',field:'due_date = null',eff:'Cannot be aged; breaks DSO',cash:0});
-    recs.push({r:'INV-47990 / 47991',check:'Duplicate invoice number',field:'invoice_no',eff:'Overstates receivables',cash:88000});
+    recs.push({r:'INV-48213',check:'Invoice with no due date',field:'due_date = null',eff:'Cannot be aged, so collection days are wrong',cash:0});
+    recs.push({r:'INV-47990 / 47991',check:'Duplicate invoice number',field:'invoice_no',eff:'Receivables are overstated',cash:88000});
+    recs.sort(function(a,b){ return b.cash-a.cash; });
     return recs;
+  }
+  function placeholderCash(){
+    return SKUS.filter(function(s){return s.placeholder;}).reduce(function(t,s){
+      var Zc=Zsvc[Zclass[s.cls]]; return t+(Zc*s.sd*Math.sqrt(s.lt)-Zc*s.sd*Math.sqrt(14))*s.cost;
+    },0);
   }
   function renderHealth(){
     var recs=healthRecords();
     document.getElementById('hlN').textContent=recs.length;
     document.getElementById('hlPlace').textContent=SKUS.filter(function(s){return s.placeholder;}).length;
+    document.getElementById('hlPlaceCash').textContent=fmt.money(placeholderCash());
     document.getElementById('hlCash').textContent=fmt.money(recs.reduce(function(t,r){return t+r.cash;},0));
     document.getElementById('ctHealth').textContent=recs.length;
     var ab=document.getElementById('alertCount'); if(ab){ ab.textContent=recs.length; ab.style.display=recs.length>0?'flex':'none'; }
     var tb=document.querySelector('#hlTable tbody'); tb.innerHTML='';
     recs.forEach(function(r){
-      tb.appendChild(el('<tr><td style="font-family:var(--fm);font-size:12px;">'+r.r+'</td><td>'+r.check+'</td><td class="mini">'+r.field+'</td><td class="mini">'+r.eff+'</td><td class="num">'+(r.cash>0?fmt.money0(r.cash):'&mdash;')+'</td></tr>'));
+      var drives = r.cash>0 ? ' class="drives"' : '';
+      tb.appendChild(el('<tr'+drives+'><td style="font-family:var(--fm);font-size:12px;">'+r.r+'</td><td>'+r.check+'</td><td class="mini">'+r.field+'</td><td class="mini">'+r.eff+'</td><td class="num">'+(r.cash>0?fmt.money0(r.cash):'&mdash;')+'</td></tr>'));
+    });
+    renderAlerts(recs);
+  }
+  function renderAlerts(recs){
+    recs = recs || healthRecords();
+    var cntEl=document.getElementById('amCount'); if(cntEl) cntEl.textContent=recs.length;
+    var list=document.getElementById('amList'); if(!list) return;
+    list.innerHTML='';
+    if(!recs.length){ list.appendChild(el('<div class="am-empty">No open flags. Data is clean on the latest load.</div>')); return; }
+    recs.forEach(function(r){
+      var cash = r.cash>0 ? fmt.money0(r.cash) : 'no cash effect';
+      var cashCls = r.cash>0 ? 'am-cash' : 'am-cash zero';
+      var b=el('<button class="am-item"><div class="am-r"><span class="am-check">'+r.check+'</span><span class="'+cashCls+'">'+cash+'</span></div><div class="am-rec">'+r.r+'</div><div class="am-eff">'+r.eff+'</div></button>');
+      b.addEventListener('click',function(){ closeAlerts(); go('health'); });
+      list.appendChild(b);
     });
   }
 
   // ================= NAV =================
-  var CTXMAP={dashboard:'Overview / Dashboard',inventory:'Working capital / Inventory',receivables:'Working capital / Receivables',payables:'Working capital / Payables',actions:'Synthesis / Action List',peers:'Synthesis / Peer Comparison',source:'Assurance / Source Data',health:'Assurance / Data Health',governance:'Assurance / Governance',how:'Start here / How It Works'};
+  var CTXMAP={dashboard:'Overview / Dashboard',inventory:'Working capital / Inventory',receivables:'Working capital / Receivables',payables:'Working capital / Payables',actions:'Synthesis / Action List',trend:'Synthesis / Trend vs History',peers:'Synthesis / Peer Comparison',source:'Assurance / Source Data',health:'Assurance / Data Health',governance:'Assurance / Governance',how:'Start here / How It Works'};
   function go(tab){
+    if(typeof closeAlerts==='function') closeAlerts();
     document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id===tab);});
     document.querySelectorAll('.nav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===tab);});
     document.getElementById('ctx').textContent=CTXMAP[tab]||'';
@@ -1704,6 +2032,7 @@
     try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
   }
   document.querySelectorAll('.nav button').forEach(function(b){ b.addEventListener('click',function(){ go(b.getAttribute('data-tab')); }); });
+  document.querySelectorAll('.tgl').forEach(function(b){ b.addEventListener('click',function(){ TREND_BASIS=b.getAttribute('data-basis'); renderTrend(); }); });
   document.querySelectorAll('[data-goto]').forEach(function(x){ x.addEventListener('click',function(){ go(x.getAttribute('data-goto')); }); });
   document.getElementById('mtoggle').addEventListener('click',function(){ document.getElementById('side').classList.toggle('open'); });
 
@@ -1718,6 +2047,25 @@
     var url=URL.createObjectURL(blob); var a=document.createElement('a');
     a.href=url; a.download='data-health-fix-list.csv'; document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
+  });
+
+  // alert (data health) dropdown
+  var mastAlerts=document.getElementById('mastAlerts'), alertMenu=document.getElementById('alertMenu');
+  function closeAlerts(){ if(alertMenu){ alertMenu.hidden=true; mastAlerts.setAttribute('aria-expanded','false'); } }
+  function toggleAlerts(){ if(!alertMenu) return; var open=alertMenu.hidden; renderAlerts(); alertMenu.hidden=!open; mastAlerts.setAttribute('aria-expanded', open?'true':'false'); }
+  if(mastAlerts) mastAlerts.addEventListener('click',function(e){ e.stopPropagation(); toggleAlerts(); });
+  document.addEventListener('click',function(e){ if(!e.target.closest('.alertwrap')) closeAlerts(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeAlerts(); });
+
+  // export report (executive pack) via print
+  var mastExport=document.getElementById('mastExport');
+  if(mastExport) mastExport.addEventListener('click',function(){
+    closeAlerts();
+    var d=new Date();
+    var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var pd=document.getElementById('phDate'); if(pd) pd.textContent=months[d.getMonth()]+' '+d.getFullYear();
+    var pc=document.getElementById('phCoc'); if(pc) pc.textContent=(Math.round(COC*1000)/10);
+    window.print();
   });
 
   // user account menu
@@ -1771,9 +2119,15 @@
     reveals.forEach(function(r){ io.observe(r); });
   }
 
+  function renderHow(){
+    var c=histCurrent();
+    function setDay(id,v){ var e=document.getElementById(id); if(e) e.innerHTML=v+'<span class="un">d</span>'; }
+    setDay('hiwDih',c.dih); setDay('hiwDso',c.dso); setDay('hiwDpo',c.dpo); setDay('hiwCcc',c.ccc);
+  }
+
   function renderAll(){
     computeInventory();
-    renderDashboard(); renderInventory(); renderReceivables(); renderPayables(); renderActions(); renderPeers(); renderSource(); renderHealth();
+    renderDashboard(); renderInventory(); renderReceivables(); renderPayables(); renderActions(); renderTrend(); renderPeers(); renderSource(); renderHealth(); renderHow();
     applyGlossary(document.querySelector('.main'));
   }
   renderAll();
