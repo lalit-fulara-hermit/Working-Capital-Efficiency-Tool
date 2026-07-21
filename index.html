@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evalueserve Insightsfirst Working Capital Efficiency Tool</title>
+<style>
+  :root{
+    --purple:#43224d; --purple-700:#5a2e66; --purple-mid:#6f5179;
+    --magenta:#e0044e; --magenta-soft:#fdeef2;
+    --ink:#2a1730; --muted:#6b5a73;
+    --paper:#faf8fc; --panel:#ffffff; --mist:#f5f1f8; --line:#ece4f1;
+    --up:#1f8f68; --up-soft:#e9f6f0;
+    --fd:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --fm:ui-monospace,"SF Mono","Roboto Mono",Consolas,"Liberation Mono",monospace;
+    --shadow:0 10px 30px -18px rgba(67,34,77,.5);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:var(--fd);color:var(--ink);background:var(--paper);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  a{color:var(--magenta);text-decoration:none;}
+  button{font-family:inherit;}
+
+  /* shell */
+  .shell{display:grid;grid-template-columns:236px 1fr;grid-template-rows:56px 1fr;grid-template-areas:"brand top" "side main";min-height:100vh;}
+  .brand{grid-area:brand;background:var(--purple);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 18px;}
+  .brand .name{font-weight:700;font-size:16px;letter-spacing:.1px;}
+  .brand .name b{color:var(--magenta);font-weight:700;}
+  .brand .name .dot{color:var(--magenta);}
+  .brand small{font-family:var(--fm);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#cdb4d8;margin-top:1px;}
+
+  .top{grid-area:top;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 20px;}
+  .top .ctx{font-family:var(--fm);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .top .spacer{flex:1;}
+  .mast-r{margin-left:auto;display:flex;align-items:center;gap:12px;}
+  .statuspill{display:inline-flex;align-items:center;gap:7px;background:var(--mist);border:1px solid var(--line);border-radius:20px;padding:5px 11px;font-family:var(--fm);font-size:10px;letter-spacing:.03em;color:var(--muted);white-space:nowrap;}
+  .statuspill .dot{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 0 3px var(--up-soft);}
+  .statuspill b{color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+  .icobtn{position:relative;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--purple-mid);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s,border-color .12s,color .12s;}
+  .icobtn:hover{background:var(--mist);border-color:var(--purple-mid);color:var(--purple);}
+  .icobtn svg{width:17px;height:17px;}
+  .icobtn .badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--magenta);color:#fff;font-family:var(--fm);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .mast-div{width:1px;height:28px;background:var(--line);}
+  .user{display:flex;align-items:center;gap:9px;padding:5px 8px 5px 5px;border-radius:10px;cursor:pointer;position:relative;transition:background .12s;}
+  .user:hover{background:var(--mist);}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple-mid));color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;letter-spacing:.5px;}
+  .umeta{display:flex;flex-direction:column;line-height:1.15;}
+  .umeta .un{font-size:12.5px;font-weight:600;color:var(--ink);}
+  .umeta .ur{font-size:10.5px;color:var(--muted);}
+  .user .chev{color:var(--muted);font-size:9px;margin-left:1px;transition:transform .15s;}
+  .user.open .chev{transform:rotate(180deg);}
+  .umenu{position:absolute;top:46px;right:0;width:236px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 38px rgba(43,23,48,.18);padding:6px;z-index:90;display:none;}
+  .umenu.show{display:block;}
+  .umenu .uhead{padding:10px 10px 11px;border-bottom:1px solid var(--line);margin-bottom:6px;}
+  .umenu .uhead .n{font-size:13px;font-weight:600;color:var(--ink);}
+  .umenu .uhead .e{font-size:11px;color:var(--muted);font-family:var(--fm);margin-top:2px;}
+  .umenu .uhead .org{display:inline-block;margin-top:8px;font-family:var(--fm);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--purple-mid);background:var(--mist);border-radius:5px;padding:3px 8px;}
+  .umenu a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--ink);cursor:pointer;text-decoration:none;}
+  .umenu a:hover{background:var(--mist);}
+  .umenu a svg{width:15px;height:15px;color:var(--purple-mid);}
+  .umenu a.out{color:var(--magenta);} .umenu a.out svg{color:var(--magenta);}
+  .umenu .sep{height:1px;background:var(--line);margin:6px 4px;}
+  @media(max-width:900px){ .statuspill,.mast-help,.mast-div{display:none;} .top .ctx{display:none;} .umeta{display:none;} .mast-r{gap:9px;} }
+  .coc{display:flex;align-items:center;gap:8px;background:var(--magenta-soft);border:1.5px solid var(--magenta);border-radius:9px;padding:6px 11px;box-shadow:0 0 0 3px rgba(224,4,78,.08);}
+  .coc .pencil{color:var(--magenta);font-size:12px;line-height:1;}
+  .coc label{font-family:var(--fm);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--magenta);font-weight:600;}
+  .coc input{width:52px;border:1px solid #f0aec2;border-radius:6px;padding:4px 6px;font-family:var(--fm);font-size:13px;color:var(--purple);text-align:right;background:#fff;font-weight:700;}
+  .coc input:focus{outline:none;border-color:var(--magenta);box-shadow:0 0 0 2px var(--magenta-soft);}
+  .coc .u{font-family:var(--fm);font-size:12px;color:var(--magenta);}
+  /* editable fields the user controls */
+  .uedit{border:1.5px solid var(--magenta)!important;box-shadow:0 0 0 3px rgba(224,4,78,.07);background:#fff!important;color:var(--purple)!important;font-weight:600;}
+  .uedit:focus{outline:none;box-shadow:0 0 0 3px var(--magenta-soft);}
+  .pencilmark{color:var(--magenta);font-size:11px;margin-right:2px;}
+  .editnote{font-family:var(--fm);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--magenta);font-weight:600;display:inline-flex;align-items:center;gap:4px;}
+
+  .side{grid-area:side;background:var(--panel);border-right:1px solid var(--line);padding:14px 12px 40px;overflow-y:auto;}
+  .side .grp{font-family:var(--fm);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#a392ad;margin:16px 8px 6px;}
+  .side .grp:first-child{margin-top:2px;}
+  .nav{display:flex;flex-direction:column;gap:2px;}
+  .nav button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;border:none;color:var(--ink);font-size:13.5px;padding:8px 10px;border-radius:8px;cursor:pointer;}
+  .nav button:hover{background:var(--mist);}
+  .nav button.on{background:#efe4f4;color:var(--purple);font-weight:600;}
+  .nav button .ct{margin-left:auto;font-family:var(--fm);font-size:9.5px;color:#a392ad;background:#fff;border:1px solid var(--line);border-radius:8px;padding:1px 6px;}
+  .nav button.on .ct{color:var(--purple-mid);}
+  .nav button .soon{margin-left:auto;font-family:var(--fm);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:#b79ac6;}
+  .nav .dotmark{width:6px;height:6px;border-radius:50%;background:var(--magenta);flex:none;}
+
+  .main{grid-area:main;padding:26px 32px 70px;max-width:1120px;overflow-x:hidden;}
+  .panel{display:none;}
+  .panel.on{display:block;animation:fade .18s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  .phead{margin-bottom:18px;}
+  .crumb{font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .phead h1{font-size:25px;font-weight:800;letter-spacing:-.02em;color:var(--purple);margin:0;}
+  .phead .sub{color:var(--muted);font-size:13.5px;margin-top:4px;max-width:760px;}
+
+  .eyebrow{font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--purple-mid);font-weight:600;margin:30px 0 8px;}
+  .eyebrow:first-child{margin-top:6px;}
+
+  /* cards + grid */
+  .grid{display:grid;gap:14px;}
+  .g4{grid-template-columns:repeat(4,1fr);}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  .g2{grid-template-columns:repeat(2,1fr);}
+  .acsplit{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;align-items:start;}
+  .acsplit .card{position:sticky;top:16px;}
+  .acsplit .card:first-child{position:static;}
+  .adval{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;}
+  .adval .b{background:var(--mist);border:1px solid var(--line);border-radius:9px;padding:9px 10px;}
+  .adval .b .k{font-family:var(--fm);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .adval .b .v{font-size:16px;font-weight:800;color:var(--purple);margin-top:3px;letter-spacing:-.01em;}
+  .adsec{margin-top:13px;}
+  .adsec h5{margin:0 0 3px;font-family:var(--fm);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--purple-mid);font-weight:700;}
+  .adsec p{margin:0;font-size:13px;color:var(--ink);}
+  .adrec{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px dashed var(--line);}
+  .adrec:last-child{border-bottom:none;} .adrec .rn{font-family:var(--fm);font-size:12px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;}
+  .card .hd{display:flex;align-items:center;gap:8px;padding:12px 15px;border-bottom:1px solid var(--line);}
+  .card .hd h3{margin:0;font-size:13.5px;font-weight:700;color:var(--purple);}
+  .card .hd .c{margin-left:auto;font-family:var(--fm);font-size:10px;color:var(--muted);}
+  .card .bd{padding:15px;}
+  .card .bd.tight{padding:12px 15px;}
+
+  /* kpi */
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px;position:relative;transition:border-color .12s,box-shadow .12s,transform .12s;}
+  .kpi.click{cursor:pointer;}
+  .kpi.click:hover{border-color:var(--magenta);box-shadow:var(--shadow);transform:translateY(-2px);}
+  .kpi .k{font-family:var(--fm);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .kpi .v{font-size:27px;font-weight:800;letter-spacing:-.02em;color:var(--purple);margin-top:6px;line-height:1;}
+  .kpi .v .un{font-size:14px;font-weight:600;color:var(--muted);margin-left:3px;}
+  .kpi .foot{margin-top:9px;font-family:var(--fm);font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+  .kpi .go{position:absolute;top:14px;right:14px;font-size:15px;color:var(--line);}
+  .kpi.click:hover .go{color:var(--magenta);}
+  .delta{font-family:var(--fm);font-size:10.5px;font-weight:600;}
+  .delta.bad{color:var(--magenta);} .delta.good{color:var(--up);}
+
+  /* tables */
+  table.t{border-collapse:collapse;width:100%;font-size:13px;}
+  table.t th,table.t td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  table.t thead th{font-family:var(--fm);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--mist);}
+  table.t tbody tr:hover{background:var(--mist);}
+  table.t td.num,table.t th.num{text-align:right;font-family:var(--fm);font-size:12.5px;}
+  table.t tr:last-child td{border-bottom:none;}
+  .rowsel{cursor:pointer;}
+  .rowsel.sel{background:#efe4f4 !important;}
+
+  /* pills / tags */
+  .tag{display:inline-block;font-family:var(--fm);font-size:9px;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;font-weight:600;}
+  .tag.a{background:#efe4f4;color:var(--purple);} .tag.b{background:#eef1f6;color:#4b5563;} .tag.c{background:#f3f2f4;color:#7a7280;}
+  .tag.warn{background:var(--magenta-soft);color:var(--magenta);}
+  .tag.ok{background:var(--up-soft);color:var(--up);}
+  .tag.flat{background:#fff;border:1px solid var(--line);color:var(--muted);}
+
+  .hot{color:var(--magenta);font-weight:600;} .good{color:var(--up);font-weight:600;} .mut{color:var(--muted);}
+
+  .note{border-left:3px solid var(--magenta);background:var(--magenta-soft);padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;color:var(--ink);}
+  .note .l{display:block;font-family:var(--fm);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--magenta);font-weight:700;margin-bottom:3px;}
+  .note.calm{border-left-color:var(--purple-mid);background:var(--mist);}
+  .note.calm .l{color:var(--purple-mid);}
+
+  /* glossary */
+  .g{border-bottom:1px dotted var(--purple-mid);cursor:help;position:relative;color:var(--purple);font-weight:600;}
+  .g .tip{visibility:hidden;opacity:0;position:absolute;bottom:150%;left:0;width:250px;max-width:74vw;background:var(--purple);color:#fff;padding:9px 11px;border-radius:8px;font-size:12px;font-weight:400;line-height:1.45;z-index:60;box-shadow:0 10px 26px rgba(30,10,35,.32);transition:opacity .12s;text-align:left;}
+  .g .tip::after{content:"";position:absolute;top:100%;left:14px;border:6px solid transparent;border-top-color:var(--purple);}
+  .g:hover .tip,.g:focus .tip{visibility:visible;opacity:1;}
+
+  .lede{color:var(--muted);font-size:14px;max-width:760px;margin:0 0 6px;}
+  .prose p{margin:9px 0;} .prose h4{color:var(--purple);font-size:15px;margin:16px 0 4px;}
+  ul.clean{margin:8px 0;padding-left:18px;} ul.clean li{margin:6px 0;}
+  .figure{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px 12px;}
+  .figure svg{max-width:100%;height:auto;display:block;}
+  .figure .cap{font-size:12.5px;color:var(--muted);margin-top:10px;}
+  .chain{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:10px 0;}
+  .chain .step{flex:1 1 150px;background:var(--mist);border:1px solid var(--line);border-radius:10px;padding:11px 13px;}
+  .chain .step .k{font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--purple-mid);font-weight:700;}
+  .chain .step .v{font-size:12.5px;margin-top:3px;}
+  .chain .step.fin{background:var(--up-soft);border-color:#cdeadd;} .chain .step.fin .k{color:var(--up);}
+  .arrow{align-self:center;color:var(--purple-mid);font-weight:700;}
+
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 14px;}
+  .controls select{font-family:var(--fm);font-size:12px;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:#fff;color:var(--ink);}
+  .controls label{font-family:var(--fm);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+
+  .barrow{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px;}
+  .barrow .lbl{width:120px;flex:none;color:var(--muted);font-family:var(--fm);font-size:11px;}
+  .barrow .track{flex:1;height:16px;background:var(--mist);border-radius:6px;overflow:hidden;position:relative;}
+  .barrow .fill{height:100%;border-radius:6px;background:var(--purple-mid);}
+  .barrow .fill.hot{background:var(--magenta);}
+  .barrow .val{width:96px;flex:none;text-align:right;font-family:var(--fm);font-size:12px;}
+
+  .mini{font-family:var(--fm);font-size:11px;color:var(--muted);}
+  .stmt{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .stmt .col h5{margin:0 0 6px;font-size:12px;color:var(--purple);font-family:var(--fm);letter-spacing:.04em;text-transform:uppercase;}
+  .stmt .line{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed var(--line);}
+  .stmt .line .n{font-family:var(--fm);}
+
+  footer{grid-area:main;}
+  .foot{color:var(--muted);font-size:11.5px;margin-top:34px;padding-top:14px;border-top:1px solid var(--line);}
+
+  @media(max-width:900px){
+    .shell{grid-template-columns:1fr;grid-template-rows:56px auto auto;grid-template-areas:"brand" "top" "main";}
+    .side{display:none;position:fixed;top:56px;left:0;right:0;bottom:0;z-index:80;border-right:none;border-bottom:1px solid var(--line);}
+    .side.open{display:block;}
+    .mtoggle{display:inline-flex;}
+    .g4{grid-template-columns:repeat(2,1fr);} .g3,.g2{grid-template-columns:1fr;} .stmt{grid-template-columns:1fr;}
+    .acsplit{grid-template-columns:1fr;} .acsplit .card{position:static;}
+    .main{padding:20px 16px 60px;}
+  }
+  @media(min-width:901px){ .mtoggle{display:none;} }
+  .mtoggle{background:var(--mist);border:1px solid var(--line);border-radius:8px;padding:6px 10px;align-items:center;gap:6px;cursor:pointer;color:var(--purple);font-size:12px;}
+  /* ===== How It Works visual explainer ===== */
+  .hiw-lead{font-size:17px;line-height:1.5;color:var(--ink);max-width:660px;margin:2px 0 0;}
+  .hiw-lead b{color:var(--purple);font-weight:700;}
+  .startbtn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:var(--purple);color:#fff;border:none;border-radius:9px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .startbtn:hover{background:var(--purple-700);}
+  .steptag{font-family:var(--fm);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--magenta);font-weight:700;margin-bottom:6px;}
+  .hiw-say{font-size:15px;color:var(--ink);line-height:1.55;max-width:640px;}
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  /* cash gap timeline */
+  .cashgap{position:relative;height:150px;margin:6px 6px 2px;overflow:hidden;}
+  .cashgap .axis{position:absolute;left:8%;right:8%;top:80px;height:2px;background:var(--line);}
+  .cashgap .band{position:absolute;top:76px;height:10px;border-radius:5px;background:rgba(224,4,78,.14);left:20%;width:60%;animation:bandpulse 7s ease-in-out infinite;}
+  @keyframes bandpulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+  .cashgap .mark{position:absolute;top:62px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--purple);transform:translateX(-50%);z-index:2;}
+  .cashgap .mark.out{border-color:var(--magenta);} .cashgap .mark.inc{border-color:var(--up);}
+  .cashgap .lab{position:absolute;top:100px;font-size:11.5px;color:var(--ink);transform:translateX(-50%);text-align:center;width:130px;line-height:1.25;}
+  .cashgap .lab .s{display:block;font-family:var(--fm);font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+  .cashgap .caplab{position:absolute;top:44px;left:50%;transform:translateX(-50%);font-family:var(--fm);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--magenta);font-weight:700;}
+  .cashgap .coin{position:absolute;top:66px;left:20%;width:20px;height:20px;border-radius:50%;background:var(--magenta);transform:translateX(-50%);box-shadow:0 2px 6px rgba(224,4,78,.4);animation:coinrun 7s ease-in-out infinite;z-index:3;}
+  @keyframes coinrun{0%{left:20%;background:var(--magenta);opacity:0;}10%{opacity:1;}88%{opacity:1;background:#c22;}100%{left:80%;background:var(--up);opacity:0;}}
+  /* three levers */
+  .levers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .lever{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .lever .anim{height:72px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .lever h4{margin:0 0 4px;font-size:14px;color:var(--purple);}
+  .lever p{margin:0;font-size:13px;color:var(--ink);line-height:1.45;}
+  .lv-bars{display:flex;align-items:flex-end;gap:7px;height:64px;}
+  .lv-bar{width:15px;background:var(--purple);border-radius:3px 3px 0 0;transform-origin:bottom;animation:shrink 3.4s ease-in-out infinite;}
+  .lv-bar:nth-child(1){height:52px;} .lv-bar:nth-child(2){height:64px;animation-delay:.25s;} .lv-bar:nth-child(3){height:44px;animation-delay:.5s;}
+  @keyframes shrink{0%,100%{transform:scaleY(1);}50%{transform:scaleY(.5);}}
+  .lv-track{position:relative;width:82%;height:12px;background:var(--mist);border-radius:6px;}
+  .lv-coin{position:absolute;top:-4px;width:20px;height:20px;border-radius:50%;background:var(--up);box-shadow:0 2px 5px rgba(31,143,104,.35);animation:slidein 3.4s ease-in-out infinite;}
+  @keyframes slidein{0%{left:calc(100% - 16px);}55%,100%{left:-4px;}}
+  .lv-cal{display:flex;gap:6px;position:relative;padding-top:16px;}
+  .lv-cal span{width:14px;height:14px;border-radius:3px;background:var(--mist);}
+  .lv-cal span.due{background:var(--purple);}
+  .lv-pay{position:absolute;top:-4px;left:0;width:18px;height:18px;border-radius:50%;background:var(--magenta);box-shadow:0 2px 5px rgba(224,4,78,.35);animation:holdpay 4s ease-in-out infinite;}
+  @keyframes holdpay{0%,45%{left:0;}75%,100%{left:80px;}}
+  /* rank rule + return */
+  .rankrule{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .rankchip{background:var(--mist);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--ink);}
+  .rankchip b{color:var(--purple);}
+  .returnbox{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center;}
+  .retstat{text-align:center;}
+  .retstat .rk{font-family:var(--fm);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .retstat .rv{font-size:34px;font-weight:800;color:var(--purple);letter-spacing:-.02em;line-height:1.1;margin-top:4px;}
+  .retstat .rv.up{color:var(--up);}
+  .retstat .rd{font-size:12px;color:var(--muted);margin-top:2px;}
+  @media(max-width:760px){.levers{grid-template-columns:1fr;}.returnbox{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    .cashgap .coin,.cashgap .band,.lv-bar,.lv-coin,.lv-pay{animation:none;}
+    .cashgap .coin{opacity:0;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="brand">
+    <div class="name">Evalueserve <b>Insightsfirst</b></div>
+    <small>Working Capital Efficiency Tool</small>
+  </div>
+
+  <div class="top">
+    <button class="mtoggle" id="mtoggle">Menu</button>
+    <span class="ctx" id="ctx">Start here / How It Works</span>
+    <div class="mast-r">
+      <span class="statuspill" title="Demo dataset. A live build shows your data source and last sync time."><span class="dot"></span><b>Demo data</b> &middot; synced 03:10</span>
+      <button class="icobtn" id="mastAlerts" title="Data health alerts" data-goto="health">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="badge" id="alertCount">0</span>
+      </button>
+      <button class="icobtn mast-help" id="mastHelp" title="How it works" data-goto="how">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+      <div class="coc" title="You set this. Change it and every figure that depends on it updates.">
+        <span class="pencil">&#9998;</span>
+        <label for="cocInput">Cost of capital</label>
+        <input id="cocInput" type="number" value="12" min="0" max="40" step="0.5">
+        <span class="u">%</span>
+      </div>
+      <span class="mast-div"></span>
+      <div class="user" id="userBtn">
+        <span class="avatar">AS</span>
+        <span class="umeta"><span class="un">Anaya Sharma</span><span class="ur">Treasury analyst</span></span>
+        <span class="chev">&#9660;</span>
+        <div class="umenu" id="umenu">
+          <div class="uhead">
+            <div class="n">Anaya Sharma</div>
+            <div class="e">a.sharma@client.example</div>
+            <span class="org">Downstream Co &middot; demo session</span>
+          </div>
+          <a data-goto="how"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>How it works</a>
+          <a data-goto="governance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Data and access</a>
+          <a data-goto="source"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/></svg>Source data</a>
+          <div class="sep"></div>
+          <a class="out" id="signout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="side" id="side">
+    <div class="grp">Start here</div>
+    <div class="nav">
+      <button class="on" data-tab="how">How It Works</button>
+    </div>
+    <div class="grp">Overview</div>
+    <div class="nav">
+      <button data-tab="dashboard">Dashboard</button>
+    </div>
+    <div class="grp">Working capital</div>
+    <div class="nav">
+      <button data-tab="inventory">Inventory<span class="ct" id="ctInv">14</span></button>
+      <button data-tab="receivables">Receivables<span class="ct" id="ctRec">11</span></button>
+      <button data-tab="payables">Payables<span class="ct" id="ctPay">10</span></button>
+    </div>
+    <div class="grp">Synthesis</div>
+    <div class="nav">
+      <button data-tab="actions">Action List<span class="dotmark" title="ranked initiatives"></span></button>
+      <button data-tab="peers">Peer Comparison</button>
+    </div>
+    <div class="grp">Assurance</div>
+    <div class="nav">
+      <button data-tab="source">Source Data</button>
+      <button data-tab="health">Data Health<span class="ct" id="ctHealth">4</span></button>
+      <button data-tab="governance">Governance</button>
+    </div>
+  </nav>
+
+  <main class="main">
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="panel" id="dashboard">
+    <div class="phead">
+      <div class="crumb">Overview / Dashboard</div>
+      <h1>Working capital at a glance</h1>
+      <p class="sub">Where your cash is tied up across stock, money owed to you, and money you owe, and where freeing it lifts your return. The figures are firm-wide. Click any card to open the detail behind it.</p>
+    </div>
+
+    <div class="grid g4">
+      <div class="kpi click" data-goto="peers">
+        <div class="go">&rsaquo;</div>
+        <div class="k">Cash conversion cycle</div>
+        <div class="v" id="kCCC">79<span class="un">days</span></div>
+        <div class="foot"><span class="delta bad" id="kCCCd">+24d vs best peer</span></div>
+      </div>
+      <div class="kpi click" data-goto="inventory">
+        <div class="go">&rsaquo;</div>
+        <div class="k">Days inventory held</div>
+        <div class="v" id="kDIH">62<span class="un">days</span></div>
+        <div class="foot"><span class="mut" id="kInvBal">Inventory $6.96m</span></div>
+      </div>
+      <div class="kpi click" data-goto="receivables">
+        <div class="go">&rsaquo;</div>
+        <div class="k">Days sales outstanding</div>
+        <div class="v" id="kDSO">58<span class="un">days</span></div>
+        <div class="foot"><span class="mut" id="kArBal">Receivables $9.22m</span></div>
+      </div>
+      <div class="kpi click" data-goto="payables">
+        <div class="go">&rsaquo;</div>
+        <div class="k">Days payable outstanding</div>
+        <div class="v" id="kDPO">41<span class="un">days</span></div>
+        <div class="foot"><span class="mut" id="kApBal">Payables $4.60m</span></div>
+      </div>
+    </div>
+
+    <div class="grid g3" style="margin-top:14px;">
+      <div class="kpi">
+        <div class="k">Working capital tied up</div>
+        <div class="v" id="kNWC">$11.58<span class="un">m</span></div>
+        <div class="foot"><span class="mut">Inventory + receivables &minus; payables. Components shown rounded, so they may not sum exactly.</span></div>
+      </div>
+      <div class="kpi click" data-goto="actions">
+        <div class="go">&rsaquo;</div>
+        <div class="k">Identified cash release</div>
+        <div class="v hot" id="kRelease">$2.03<span class="un">m</span></div>
+        <div class="foot"><span class="mut" id="kReleaseR">+ $0.35m / yr recurring</span></div>
+      </div>
+      <div class="kpi click" data-goto="actions">
+        <div class="go">&rsaquo;</div>
+        <div class="k">Return on invested capital</div>
+        <div class="v" id="kROIC">11.9<span class="un">%</span></div>
+        <div class="foot"><span class="delta good" id="kROICd">&rarr; 12.3% after actions</span></div>
+      </div>
+    </div>
+
+    <div class="eyebrow">The cash conversion cycle</div>
+    <div class="figure">
+      <svg viewBox="0 0 760 214" role="img" aria-label="Cash conversion cycle timeline">
+        <!-- ticks -->
+        <g stroke="#ece4f1" stroke-dasharray="3 3">
+          <line x1="60" y1="46" x2="60" y2="176"/>
+          <line x1="285" y1="46" x2="285" y2="176"/>
+          <line x1="401" y1="46" x2="401" y2="176"/>
+          <line x1="720" y1="46" x2="720" y2="176"/>
+        </g>
+        <!-- event labels -->
+        <g font-size="11.5" fill="#2a1730">
+          <text x="60"  y="38" text-anchor="start">Pay for stock</text>
+          <text x="285" y="38" text-anchor="middle">Pay supplier</text>
+          <text x="401" y="38" text-anchor="middle">Sell stock</text>
+          <text x="720" y="38" text-anchor="end">Collect cash</text>
+        </g>
+        <!-- DIH + DSO on the top line -->
+        <rect x="60"  y="56" width="341" height="26" rx="5" fill="#e7dcec"/>
+        <rect x="401" y="56" width="319" height="26" rx="5" fill="#d9c9df"/>
+        <g font-size="11.5" font-weight="600" fill="#43224d" text-anchor="middle">
+          <text x="230" y="73">Inventory held &middot; DIH 62d</text>
+          <text x="560" y="73">Awaiting payment &middot; DSO 58d</text>
+        </g>
+        <!-- DPO -->
+        <rect x="60" y="94" width="225" height="26" rx="5" fill="#6f5179"/>
+        <text x="172" y="111" font-size="11.5" font-weight="600" fill="#ffffff" text-anchor="middle">Supplier terms &middot; DPO 41d</text>
+        <!-- CCC -->
+        <rect x="285" y="134" width="435" height="28" rx="5" fill="#e0044e"/>
+        <text x="502" y="152" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">Cash locked up &middot; CCC 79 days</text>
+        <!-- formula -->
+        <text x="60" y="196" font-size="12" fill="#6b5a73" style="font-family:ui-monospace,monospace;">CCC = DIH 62 + DSO 58 &minus; DPO 41 = 79 days</text>
+      </svg>
+      <div class="cap">The magenta bar is what the tool works to shrink: the days your own cash is locked up. A lower <span class="g" tabindex="0">CCC<span class="tip">Cash conversion cycle. Days between paying for stock and collecting cash from the sale. Lower means less cash tied up.</span></span> frees cash without touching sales or margin.</div>
+    </div>
+
+    <div class="grid g2" style="margin-top:14px;">
+      <div class="card">
+        <div class="hd"><h3>Top ranked initiatives</h3><a data-goto="actions">Open action list &rsaquo;</a></div>
+        <div class="bd tight" id="dashActions"></div>
+      </div>
+      <div class="card">
+        <div class="hd"><h3>Data health</h3><a data-goto="health">Open checks &rsaquo;</a></div>
+        <div class="bd" id="dashHealth"></div>
+      </div>
+    </div>
+
+    <div class="foot">Evalueserve Insightsfirst Working Capital Efficiency Tool. Sample dataset shown for demonstration; figures come from your own extract and settings in deployment. Currency: USD.</div>
+  </section>
+
+  <!-- ================= INVENTORY ================= -->
+  <section class="panel" id="inventory">
+    <div class="phead">
+      <div class="crumb">Working capital / Inventory</div>
+      <h1>Inventory</h1>
+      <p class="sub">Which items hold the most cash, how much to order and when, and the dead and overstocked lines where cash is trapped. Firm stock is $6.96m. This view shows a 14-item sample that stands in for the full list.</p>
+    </div>
+
+    <div class="grid g4">
+      <div class="kpi"><div class="k">Sample stock value</div><div class="v" id="ivValue">$0</div><div class="foot"><span class="mut" id="ivSkus">14 SKUs</span></div></div>
+      <div class="kpi"><div class="k">Class A share of value</div><div class="v" id="ivA">0<span class="un">%</span></div><div class="foot"><span class="mut" id="ivAcount">0 SKUs</span></div></div>
+      <div class="kpi"><div class="k">Dead stock at stake</div><div class="v hot" id="ivDead">$0</div><div class="foot"><span class="mut" id="ivDeadN">0 SKUs idle &gt; 180d</span></div></div>
+      <div class="kpi"><div class="k">Overstock excess</div><div class="v" id="ivOver">$0</div><div class="foot"><span class="mut" id="ivOverN">above target maximum</span></div></div>
+    </div>
+
+    <div class="eyebrow">ABC segmentation</div>
+    <div class="card"><div class="bd">
+      <p class="mini" style="margin-top:0;">A small share of SKUs holds most of the money in stock. Class is set on cumulative <span class="g" tabindex="0">annual usage value<span class="tip">Unit cost times annual demand. Ranks SKUs by the cash they turn over, not by unit price alone.</span></span>: A to 70%, B to 90%, C the remainder. Service targets follow class: A 98%, B 95%, C 90%.</p>
+      <div id="abcBars" style="margin-top:12px;"></div>
+    </div></div>
+
+    <div class="eyebrow">Per-SKU policy and status</div>
+    <div class="card"><div class="bd tight">
+      <div class="mini" style="margin-bottom:8px;">Select a row to size <span class="g" tabindex="0">EOQ<span class="tip">Economic order quantity. Order size that minimises the combined cost of ordering and holding. EOQ = sqrt(2 D S / H).</span></span>, <span class="g" tabindex="0">reorder point<span class="tip">Stock level that triggers a replenishment order, set to cover demand over the lead time plus a buffer. ROP = daily demand x lead time + safety stock.</span></span> and <span class="g" tabindex="0">safety stock<span class="tip">Buffer against demand and lead-time variability, sized to the service target. Higher variability or longer lead time needs a larger buffer.</span></span>.</div>
+      <div style="overflow-x:auto;">
+      <table class="t" id="invTable">
+        <thead><tr>
+          <th>SKU</th><th>Description</th><th>Class</th>
+          <th class="num">Unit cost</th><th class="num">Annual demand</th><th class="num">On hand</th>
+          <th class="num">Lead time</th><th class="num">Stock value</th><th>Status</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div></div>
+
+    <div class="eyebrow">Per-SKU policy</div>
+    <div class="card"><div class="bd">
+      <div class="controls">
+        <span class="editnote"><span class="pencilmark">&#9998;</span>You set these</span>
+        <label for="skuSel">SKU</label>
+        <select id="skuSel" class="uedit" style="min-width:280px;"></select>
+        <label for="svcSel" style="margin-left:8px;">Service target</label>
+        <select id="svcSel" class="uedit">
+          <option value="0.90">90%</option>
+          <option value="0.95">95%</option>
+          <option value="0.98" selected>98%</option>
+          <option value="0.99">99%</option>
+        </select>
+        <span class="mini">A higher target widens the buffer and the cash it holds.</span>
+      </div>
+      <div class="grid g4" id="calcCards" style="margin-top:6px;"></div>
+      <div id="calcNote"></div>
+    </div></div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="hd"><h3>Cash-release impact</h3><span class="c" id="stmtSku">&mdash;</span></div>
+      <div class="bd">
+        <div class="stmt" id="skuStmt"></div>
+        <div id="stmtNote" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RECEIVABLES ================= -->
+  <section class="panel" id="receivables">
+    <div class="phead">
+      <div class="crumb">Working capital / Receivables</div>
+      <h1>Receivables</h1>
+      <p class="sub">How overdue each invoice is, which accounts to chase first by the cash most at risk, and whether an early-payment discount is worth it.</p>
+    </div>
+
+    <div class="grid g4">
+      <div class="kpi"><div class="k">Receivables</div><div class="v" id="rcAR">$0</div><div class="foot"><span class="mut">Annual credit sales $58.0m</span></div></div>
+      <div class="kpi"><div class="k">DSO</div><div class="v" id="rcDSO">0<span class="un">days</span></div><div class="foot"><span class="delta bad" id="rcDSOd">vs terms</span></div></div>
+      <div class="kpi"><div class="k">Overdue &gt; 60 days</div><div class="v hot" id="rcOver">$0</div><div class="foot"><span class="mut" id="rcOverN">across accounts</span></div></div>
+      <div class="kpi"><div class="k">Cash at risk</div><div class="v" id="rcRisk">$0</div><div class="foot"><span class="mut">amount weighted by age</span></div></div>
+    </div>
+
+    <div class="eyebrow">Aging schedule</div>
+    <div class="card"><div class="bd" id="agingBars"></div></div>
+
+    <div class="eyebrow">Collection priority</div>
+    <div class="card"><div class="bd tight">
+      <div class="mini" style="margin-bottom:8px;">Ranked by <span class="g" tabindex="0">cash at risk<span class="tip">Overdue balance weighted by a recovery-risk factor that rises with age. Directs collection effort to the cash most likely to be lost, not simply the oldest invoice.</span></span>, the overdue balance weighted by how likely it is to be lost.</div>
+      <div style="overflow-x:auto;">
+      <table class="t" id="rcTable">
+        <thead><tr><th>Account</th><th class="num">Balance</th><th class="num">Current</th><th class="num">1&ndash;30</th><th class="num">31&ndash;60</th><th class="num">61&ndash;90</th><th class="num">90+</th><th class="num">Cash at risk</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div></div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="hd"><h3>Early-payment discount test</h3></div>
+      <div class="bd">
+        <p class="mini" style="margin-top:0;">Offering a discount to be paid sooner has an annualised cost. It is worthwhile only where that cost is below the cost of capital, or where the reduction in DSO releases enough cash to justify it.</p>
+        <div style="overflow-x:auto;">
+        <table class="t" id="discTable">
+          <thead><tr><th>Discount terms</th><th class="num">Annualised cost</th><th class="num">Cost of capital</th><th>Assessment</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+        <div class="note calm" style="margin-top:12px;"><span class="l">Method</span>An early-payment discount is turned into a yearly rate and checked against your cost of capital. Offer it only when it costs less than the cash it brings in sooner. Yearly rate = (discount / (1 &minus; discount)) x (365 / days saved).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAYABLES ================= -->
+  <section class="panel" id="payables">
+    <div class="phead">
+      <div class="crumb">Working capital / Payables</div>
+      <h1>Payables</h1>
+      <p class="sub">Hold your cash to the due date, take a supplier discount only when it beats your cost of capital, and flag any payment made early for nothing in return.</p>
+    </div>
+
+    <div class="grid g4">
+      <div class="kpi"><div class="k">Payables</div><div class="v" id="pyAP">$0</div><div class="foot"><span class="mut">Annual purchases $41.0m</span></div></div>
+      <div class="kpi"><div class="k">DPO</div><div class="v" id="pyDPO">0<span class="un">days</span></div><div class="foot"><span class="mut">weighted average terms</span></div></div>
+      <div class="kpi"><div class="k">Discounts worth taking</div><div class="v good" id="pyDisc">$0</div><div class="foot"><span class="mut">annual value captured</span></div></div>
+      <div class="kpi"><div class="k">Paid early for no return</div><div class="v hot" id="pyEarly">$0</div><div class="foot"><span class="mut">cash left on the table / yr</span></div></div>
+    </div>
+
+    <div class="mini" style="margin-top:6px;color:var(--muted);">The ledger sample here sums to $4.60m. The firm figure on the Overview ($4.61m) is derived from DPO against annual purchases; the two differ only by rounding on the days measure.</div>
+
+    <div class="eyebrow">Supplier ledger and recommendation</div>
+    <div class="card"><div class="bd tight">
+      <div class="mini" style="margin-bottom:8px;">For each supplier the tool compares the annualised return on a discount against the cost of capital, and checks whether cash is being released before it needs to be.</div>
+      <div style="overflow-x:auto;">
+      <table class="t" id="pyTable">
+        <thead><tr><th>Supplier</th><th class="num">Balance</th><th>Terms</th><th class="num">Paid at</th><th class="num">Discount return</th><th>Recommendation</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div></div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="hd"><h3>Second-order effect: stretching DPO</h3></div>
+      <div class="bd">
+        <div class="note"><span class="l">Coupled decision</span>Paying a supplier later to hold cash longer can make that supplier slower or less reliable. That forces you to hold more stock as a buffer, which puts cash back into inventory. So part of what you save on payments, you give back on stock. The tool reads each supplier's own delivery record to show the net effect, rather than guessing.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ACTIONS ================= -->
+  <section class="panel" id="actions">
+    <div class="phead">
+      <div class="crumb">Synthesis / Action List</div>
+      <h1>Action list</h1>
+      <p class="sub">One ranked list across stock, receivables and payables. Every move is scored the same way: the cash it frees and how safe it is, with the effect on your return shown before and after.</p>
+    </div>
+
+    <div class="grid g3">
+      <div class="kpi"><div class="k">Cash you can free now</div><div class="v hot" id="acOne">$0</div><div class="foot"><span class="mut">from the ranked moves</span></div></div>
+      <div class="kpi"><div class="k">Saved each year</div><div class="v" id="acRec">$0<span class="un">/yr</span></div><div class="foot"><span class="mut">holding cost and discounts</span></div></div>
+      <div class="kpi"><div class="k">Return before &rarr; after</div><div class="v" id="acRoic">&mdash;</div><div class="foot"><span class="delta good" id="acRoicD"></span></div></div>
+    </div>
+
+    <div class="eyebrow">Ranked initiatives</div>
+    <div class="acsplit">
+      <div class="card"><div class="bd tight">
+        <div class="mini" style="margin-bottom:8px;">Select an initiative to see how it is measured, what it touches, and the step to take.</div>
+        <div style="overflow-x:auto;">
+        <table class="t" id="acTable">
+          <thead><tr><th>#</th><th>Initiative</th><th>Part</th><th class="num">Cash freed</th><th class="num">Saved / yr</th><th class="num">Capital released</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div></div>
+      <div class="card">
+        <div class="hd"><h3>Initiative detail</h3><span class="c" id="acDetailNo">&mdash;</span></div>
+        <div class="bd" id="acDetail"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="hd"><h3>Return on capital, before and after</h3></div>
+      <div class="bd">
+        <div id="roicWaterfall"></div>
+        <div class="note calm" style="margin-top:12px;"><span class="l">Read</span>The same profit on less money tied up gives a better return. What that does for shareholders depends on what you do with the freed cash, whether you repay debt or put it to work. That is a separate choice, not automatic.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PEERS ================= -->
+  <section class="panel" id="peers">
+    <div class="phead">
+      <div class="crumb">Synthesis / Peer Comparison</div>
+      <h1>Peer comparison</h1>
+      <p class="sub">Your cash cycle against peers you choose, using figures from their public accounts. Each day of difference is turned into cash. Peer names are hidden in this demo and come from filings in a live build.</p>
+    </div>
+
+    <div class="grid g4">
+      <div class="kpi"><div class="k">Your CCC</div><div class="v" id="peCCC">79<span class="un">days</span></div><div class="foot"><span class="mut">DIH 62 · DSO 58 · DPO 41</span></div></div>
+      <div class="kpi"><div class="k">Peer median CCC</div><div class="v" id="peMed">0<span class="un">days</span></div><div class="foot"><span class="mut" id="peMedGap">gap vs median</span></div></div>
+      <div class="kpi"><div class="k">Best-in-class CCC</div><div class="v good" id="peBest">0<span class="un">days</span></div><div class="foot"><span class="delta bad" id="peBestGap"></span></div></div>
+      <div class="kpi"><div class="k">Cash gap vs best</div><div class="v hot" id="peCash">$0</div><div class="foot"><span class="mut">days x daily cash flow</span></div></div>
+    </div>
+
+    <div class="eyebrow">Cash conversion cycle by peer</div>
+    <div class="card"><div class="bd" id="peerBars"></div></div>
+
+    <div class="eyebrow">Component detail</div>
+    <div class="card"><div class="bd tight">
+      <div style="overflow-x:auto;">
+      <table class="t" id="peerTable">
+        <thead><tr><th>Company</th><th class="num">DIH</th><th class="num">DSO</th><th class="num">DPO</th><th class="num">CCC</th><th class="num">Gap vs you</th><th class="num">Cash effect</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <div class="note calm" style="margin-top:12px;"><span class="l">Method</span>You choose the peers, so the comparison is never against the wrong firms. Cash for each day of difference = yearly revenue / 365, the cash tied up or freed per day of the cycle.</div>
+    </div></div>
+  </section>
+
+  <!-- ================= SOURCE DATA ================= -->
+  <section class="panel" id="source">
+    <div class="phead">
+      <div class="crumb">Assurance / Source Data</div>
+      <h1>Source data</h1>
+      <p class="sub">Every figure in the tool traces back to a raw record here. This tab shows where the data comes from, how source fields map to the tool's fields, and the records themselves, so any number can be checked at source.</p>
+    </div>
+
+    <div class="grid g4">
+      <div class="kpi"><div class="k">Source system</div><div class="v" style="font-size:18px;">SAP S/4HANA</div><div class="foot"><span class="mut">read-only extract</span></div></div>
+      <div class="kpi"><div class="k">Last refresh</div><div class="v" style="font-size:18px;">Today 03:10</div><div class="foot"><span class="mut">nightly, your schedule</span></div></div>
+      <div class="kpi"><div class="k">Objects synced</div><div class="v">4</div><div class="foot"><span class="mut">master, transactions, balances, settings</span></div></div>
+      <div class="kpi"><div class="k">Rows loaded</div><div class="v" id="srcRows">0</div><div class="foot"><span class="mut">on the sample</span></div></div>
+    </div>
+
+    <div class="eyebrow">How this data is obtained and used</div>
+    <div class="grid g2">
+      <div class="card"><div class="hd"><h3>How it is obtained</h3></div><div class="bd prose">
+        <p><strong>Your operating data.</strong> A read-only copy is taken from your finance and supply systems each night. The default source is SAP S/4HANA; Oracle and other systems are supported. Your IT team owns the schedule and can change it. Confirm the exact systems at deployment.</p>
+        <p><strong>How it arrives.</strong> The copy moves over an encrypted link into your own tenant, where the tool reads it. The tool never signs in to your live system and never writes back to it.</p>
+        <p><strong>Peer data.</strong> Figures for the peers you choose are collected from public filings by our data service, not taken from you. This is the only data that comes from outside, and every figure carries its source and date.</p>
+        <p><strong>What you set.</strong> The cost of capital, thresholds, service targets and peer group are yours to set inside the tool. They are held with your data and are not sent out.</p>
+      </div></div>
+      <div class="card"><div class="hd"><h3>How it is used, and what is not touched</h3></div><div class="bd prose">
+        <p><strong>Used only for the figures shown.</strong> Your data drives the stock, receivables and payables numbers on screen. It is not shared with other clients, not sold, and not used to train any model.</p>
+        <p><strong>What is not pulled.</strong> No bank account details, no employee personal data, no customer personal data beyond the business account name, and no priced contracts unless you choose to include them.</p>
+        <p><strong>Where it stays.</strong> Inside your region and your tenant. Nothing leaves your network except the single outward request that fetches public peer data, which sends none of your data out. Data residency is set to your region; confirm at deployment.</p>
+        <p><strong>How long it is kept.</strong> The working copy is refreshed each night and the previous one is discarded. Trend history is held for 13 months by default. On exit, your data and settings are deleted within 30 days. Confirm both at deployment.</p>
+      </div></div>
+    </div>
+
+    <div class="eyebrow">Lineage and objects</div>
+    <div class="card"><div class="bd tight">
+      <table class="t"><thead><tr><th>Object</th><th>Source</th><th class="num">Rows</th><th>Feeds</th></tr></thead><tbody id="srcObjects"></tbody></table>
+    </div></div>
+
+    <div class="eyebrow">Field mapping</div>
+    <div class="card"><div class="bd tight">
+      <div class="mini" style="margin-bottom:8px;">Tool field on the left, the source table and column it reads on the right. The mapping is set once per deployment with your IT team.</div>
+      <div style="overflow-x:auto;">
+      <table class="t"><thead><tr><th>Tool field</th><th>Source table.column</th><th>Object</th></tr></thead><tbody id="srcMap"></tbody></table>
+      </div>
+    </div></div>
+
+    <div class="eyebrow">Raw records: inventory master</div>
+    <div class="card"><div class="bd tight"><div style="overflow-x:auto;">
+      <table class="t"><thead><tr><th>material</th><th>description</th><th class="num">std_cost</th><th class="num">annual_issue_qty</th><th class="num">unrestr_qty</th><th class="num">plnd_deliv_time</th><th class="num">last_issue_days</th></tr></thead><tbody id="srcInv"></tbody></table>
+    </div></div></div>
+
+    <div class="eyebrow">Raw records: receivables ledger</div>
+    <div class="card"><div class="bd tight"><div style="overflow-x:auto;">
+      <table class="t"><thead><tr><th>customer</th><th class="num">total_open</th><th class="num">not_due</th><th class="num">1&ndash;30</th><th class="num">31&ndash;60</th><th class="num">61&ndash;90</th><th class="num">90+</th></tr></thead><tbody id="srcRec"></tbody></table>
+    </div></div></div>
+
+    <div class="eyebrow">Raw records: payables ledger</div>
+    <div class="card"><div class="bd tight"><div style="overflow-x:auto;">
+      <table class="t"><thead><tr><th>vendor</th><th class="num">open_amount</th><th>payment_terms</th><th class="num">avg_days_to_pay</th></tr></thead><tbody id="srcPay"></tbody></table>
+    </div></div></div>
+
+    <div class="eyebrow">Settings in force</div>
+    <div class="card"><div class="bd tight">
+      <table class="t"><thead><tr><th>Setting</th><th class="num">Value</th><th>Set by</th></tr></thead><tbody id="srcSettings"></tbody></table>
+      <div class="note calm" style="margin-top:12px;"><span class="l">Traceability</span>The tool never writes to these records. It reads the nightly extract and holds the settings you control. Any figure elsewhere in the tool traces back to a row above.</div>
+    </div></div>
+  </section>
+
+  <!-- ================= DATA HEALTH ================= -->
+  <section class="panel" id="health">
+    <div class="phead">
+      <div class="crumb">Assurance / Data Health</div>
+      <h1>Data health</h1>
+      <p class="sub">A few faults in the source data quietly throw off the numbers. The tool flags each record, sizes the effect, and gives you a fix list. It never changes your source; your system stays the record of truth.</p>
+    </div>
+
+    <div class="grid g4">
+      <div class="kpi"><div class="k">Records flagged</div><div class="v hot" id="hlN">0</div><div class="foot"><span class="mut">on the sample</span></div></div>
+      <div class="kpi"><div class="k">SKUs on placeholder lead time</div><div class="v" id="hlPlace">0</div><div class="foot"><span class="mut">99 or 999 day defaults</span></div></div>
+      <div class="kpi"><div class="k">Cash effect if corrected</div><div class="v" id="hlCash">$0</div><div class="foot"><span class="mut">buffer released</span></div></div>
+      <div class="kpi"><div class="k">Checks run</div><div class="v">7</div><div class="foot"><span class="mut">on every load</span></div></div>
+    </div>
+
+    <div class="eyebrow">Flagged records</div>
+    <div class="card"><div class="bd tight">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button id="hlCsvBtn" style="font-family:var(--fm);font-size:11px;letter-spacing:.04em;color:var(--purple);background:var(--mist);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;">Download fix list (CSV)</button></div>
+      <div style="overflow-x:auto;">
+      <table class="t" id="hlTable">
+        <thead><tr><th>Record</th><th>Check failed</th><th>Field</th><th>Effect</th><th class="num">Cash effect</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div></div>
+
+    <div class="eyebrow">Check set</div>
+    <div class="card"><div class="bd tight">
+      <table class="t">
+        <thead><tr><th>Check</th><th>What it distorts</th></tr></thead>
+        <tbody>
+          <tr><td>Negative stock quantity</td><td>Posting error. Distorts days of stock, turns and the value sort.</td></tr>
+          <tr><td>Zero or negative unit cost</td><td>Breaks order-size, value and valuation calculations.</td></tr>
+          <tr><td>Placeholder lead time (99 / 999 days)</td><td>Inflates safety stock and reorder levels on every SKU affected.</td></tr>
+          <tr><td>Dates outside the period</td><td>Counts events in the wrong period, distorting the days measures.</td></tr>
+          <tr><td>Invoice with no due date</td><td>Cannot be aged, so it breaks the collection and payment measures.</td></tr>
+          <tr><td>Duplicate invoice numbers</td><td>Counts the same amount twice and overstates what is owed.</td></tr>
+          <tr><td>Movement with no balance, or balance with no movement</td><td>Broken record link; days-of-stock cannot be trusted.</td></tr>
+        </tbody>
+      </table>
+      <div class="note" style="margin-top:12px;"><span class="l">No silent correction</span>Faults are shown and sized, never fixed quietly. Whether to correct the source is your call, made with the effect in view. Every figure traces back to these records.</div>
+    </div></div>
+
+    <div class="eyebrow">Data quality policy</div>
+    <div class="card"><div class="bd prose">
+      <p><strong>Checked on every load.</strong> The full check set runs each time the data refreshes, so a new fault is caught the next morning, not months later.</p>
+      <p><strong>Sized, never hidden.</strong> Each fault is shown with the cash it distorts, so you can see which ones matter and which can wait.</p>
+      <p><strong>Fixed at source, by you.</strong> The tool never changes your data. Faults are yours to correct in the source system, which stays the record of truth. The tool re-checks on the next load and clears the flag once the source is fixed.</p>
+      <p><strong>Ownership and cadence.</strong> By default, flagged records are routed to your data owner, high-cash faults are reviewed weekly, and the rest each month. Confirm the owners and the timings at deployment.</p>
+    </div></div>
+  </section>
+
+  <!-- ================= GOVERNANCE ================= -->
+  <section class="panel" id="governance">
+    <div class="phead">
+      <div class="crumb">Assurance / Governance</div>
+      <h1>Governance</h1>
+      <p class="sub">How your data is governed and secured, who can use the tool, how AI is used to gather and shape the data that feeds it, how each figure is worked out, and where the tool states its own limits.</p>
+    </div>
+
+    <div class="eyebrow">Data governance</div>
+    <div class="grid g2">
+      <div class="card"><div class="hd"><h3>Ownership and control</h3></div><div class="bd prose">
+        <p><strong>You own the data.</strong> Your operating data is yours. Evalueserve processes it on your behalf to run the tool, and for nothing else. Your source system stays the record of truth.</p>
+        <p><strong>Where it runs.</strong> The tool runs inside your own tenant. Default hosting is Google Cloud in your region. Confirm the region at deployment.</p>
+        <p><strong>What moves.</strong> Operating data stays in your network. The only outbound connection fetches public peer figures and sends none of your data out. Your IT team allows it as a single firewall rule.</p>
+        <p><strong>Retention and deletion.</strong> A nightly copy replaces the last. Trend history is held for 13 months by default. On exit, all your data and settings are deleted within 30 days, with written confirmation. Confirm both at deployment.</p>
+      </div></div>
+      <div class="card"><div class="hd"><h3>The four data objects</h3></div><div class="bd prose">
+        <p>All three modules read the same four objects, which is what lets one engine serve them.</p>
+        <p><strong>Master.</strong> Product, supplier or customer, with unit cost, terms, category and lead time.</p>
+        <p><strong>Transactions.</strong> Dated events: stock in and out, invoices raised and received, payments made and received.</p>
+        <p><strong>Balances.</strong> Current position: stock on hand, amounts owed to suppliers and by customers.</p>
+        <p><strong>Settings.</strong> The numbers you control: cost of capital, carrying rate, ordering cost, service targets, peer group.</p>
+      </div></div>
+    </div>
+
+    <div class="eyebrow">User and access policy</div>
+    <div class="grid g2">
+      <div class="card"><div class="hd"><h3>Who can sign in</h3></div><div class="bd prose">
+        <p><strong>Named users only.</strong> Access is by named account through your own single sign-on. Multi-factor sign-in is required. There are no shared logins.</p>
+        <p><strong>Roles.</strong> Three levels, least access by default. A <strong>Viewer</strong> reads the figures. An <strong>Analyst</strong> also changes settings such as the cost of capital and the peer group. An <strong>Admin</strong> also manages users and the data connection. Confirm the role list at deployment.</p>
+        <p><strong>Joiners and leavers.</strong> Your admin adds and removes users. Removing a user cuts access at once. Access is reviewed each quarter.</p>
+      </div></div>
+      <div class="card"><div class="hd"><h3>Use and responsibilities</h3></div><div class="bd prose">
+        <p><strong>What it is for.</strong> Internal decision support for your own working capital. Figures are not to be shared outside your organisation without agreement.</p>
+        <p><strong>Your responsibilities.</strong> Keep your sign-in safe, use the tool for its stated purpose, and report anything that looks wrong through Data Health or to your admin.</p>
+        <p><strong>What is logged.</strong> Sign-ins, setting changes and data refreshes are recorded with the user and time, so any figure can be tied to who set what. Logs are held for 12 months by default.</p>
+      </div></div>
+    </div>
+
+    <div class="eyebrow">Security</div>
+    <div class="card"><div class="bd prose">
+      <p><strong>In transit and at rest.</strong> All data is encrypted on the wire and in storage, using current standards.</p>
+      <p><strong>Separation.</strong> Your data sits in your own tenant, kept apart from other clients. Staff access is least privilege and logged.</p>
+      <p><strong>Standards.</strong> The service is run to align with ISO 27001 and SOC 2, with independent testing before release and regular checks after. Confirm the current certificates and reports at deployment.</p>
+      <p><strong>If something goes wrong.</strong> A named incident process applies. You are told without delay if your data is affected, with what happened, what was done, and what to do next.</p>
+    </div></div>
+
+    <div class="eyebrow">AI and automation policy</div>
+    <div class="card"><div class="bd prose">
+      <p><strong>The figures in this tool use no AI.</strong> Every number on screen comes from a set formula, shown in full on How It Works, and traces back to a source record. No model decides a figure. This keeps the numbers checkable and repeatable.</p>
+      <p>AI is used in three places to gather and shape the data that feeds the tool. Each one is governed, and a person signs off before anything reaches a deliverable.</p>
+      <p><strong>1. Agentic AI to collect peer data.</strong> Software agents find and pull peer figures from public filings and other public sources, for the peers you choose. They work on public data only, record the source and date for every figure, and send none of your data out. They cannot change your data or take any action inside your tenant. Every collected figure is checked by an analyst before use. There is a full run log and an off switch.</p>
+      <p><strong>2. Generative AI to turn raw data into structured data and insights.</strong> Generative models read the collected documents, pull out the figures, put them into a common shape, and draft short plain-language notes. Every figure stays tied to its source, so nothing is invented, and a person reviews the output before it is used. Your data and the collected data are never used to train or fine-tune any model. Where an outside model is used, it runs under a no-retention agreement.</p>
+      <p><strong>3. MLOps to run and watch the pipeline.</strong> Collection and processing run as versioned pipelines. Every step records what data went in and what came out, so any output can be traced back. The pipelines are watched for errors and drift, changes are released only after sign-off, and any release can be rolled back. Your operating data is kept apart from any training or evaluation data.</p>
+      <p><strong>In short.</strong> AI helps gather and structure data, always with a person checking and a clear trail. Your own operating data is never sent to a public AI service and never used to train a model. The on-screen figures stay formula-based and yours.</p>
+    </div></div>
+
+    <div class="eyebrow">Method governance</div>
+    <div class="grid g2">
+      <div class="card"><div class="hd"><h3>How figures are worked out</h3></div><div class="bd prose">
+        <p><strong>One basis for value.</strong> Every move is valued the same way: the cash it frees, at your cost of capital. No move is scored on a hidden basis.</p>
+        <p><strong>Cost of capital.</strong> A single setting that drives every figure. When cash is tight, use the marginal borrowing rate rather than a blended long-run rate. Figures move visibly when you change it.</p>
+        <p><strong>Published formulas.</strong> Order size, reorder point, safety stock, the cycle measures and the discount tests are standard methods, each set out on How It Works.</p>
+      </div></div>
+      <div class="card"><div class="hd"><h3>Limits the tool states about itself</h3></div><div class="bd prose">
+        <p><strong>Effect by type.</strong> Each effect is marked as a number, a flag, or a setting. A flagged or assumed effect is never shown as a firm figure.</p>
+        <p><strong>Thin-data flag.</strong> Advice built on incomplete data, most often missing lead times or short history, is marked rather than hidden.</p>
+        <p><strong>Alert floor.</strong> Warnings appear only above a set cash value, so the action list stays material.</p>
+        <p><strong>Where numbers stop.</strong> The tool sizes the cash and flags where a cost to a key supplier or customer exists. It does not treat the cash figure as the whole decision.</p>
+      </div></div>
+    </div>
+
+    <div class="eyebrow">Change control and limits</div>
+    <div class="grid g2">
+      <div class="card"><div class="hd"><h3>Change control</h3></div><div class="bd prose">
+        <p><strong>Versioned method.</strong> The formulas and thresholds are versioned. A change to any of them is recorded, dated, and signed off before release.</p>
+        <p><strong>Setting changes.</strong> When you change a setting such as the cost of capital, the figures update at once and the change is logged with the user and time.</p>
+        <p><strong>Releases.</strong> New versions carry a note of what changed and why, so you can see how a figure would differ from a past run.</p>
+      </div></div>
+      <div class="card"><div class="hd"><h3>Limits and disclaimer</h3></div><div class="bd prose">
+        <p><strong>Decision support, not advice.</strong> The tool sizes cash and ranks moves to inform your decision. It is not financial, tax or legal advice.</p>
+        <p><strong>Only as good as the inputs.</strong> Figures depend on the quality of your data and the settings you choose. Data Health flags the faults that would distort them.</p>
+        <p><strong>Where numbers stop.</strong> Some effects, such as a lost sale or a strained supplier, cannot be sized from the data. These are flagged, not turned into a figure that would mislead.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section class="panel on" id="how">
+    <div class="phead">
+      <div class="crumb">Start here / How It Works</div>
+      <h1>How it works</h1>
+      <p class="hiw-lead">Cash gets stuck in three places: <b>stock you hold</b>, <b>money owed to you</b>, and <b>money you owe</b>. This tool finds where your cash is stuck and how much you can free, without touching sales or margin.</p>
+      <button class="startbtn" data-goto="dashboard">Open the dashboard <span>&rarr;</span></button>
+    </div>
+
+    <div class="eyebrow reveal">The cash gap</div>
+    <div class="card reveal"><div class="bd">
+      <p class="hiw-say" style="margin-top:0;">You pay for stock, hold it, sell it, then wait to get paid. Meanwhile you delay paying your suppliers. The days in between are cash you have funded and cannot use. The tool measures that gap and shows how to shorten it.</p>
+      <div class="cashgap">
+        <div class="axis"></div>
+        <div class="band"></div>
+        <div class="caplab">Cash tied up</div>
+        <div class="mark out" style="left:20%;"></div>
+        <div class="mark" style="left:50%;"></div>
+        <div class="mark inc" style="left:80%;"></div>
+        <div class="coin"></div>
+        <div class="lab" style="left:20%;">Pay for stock<span class="s">cash out</span></div>
+        <div class="lab" style="left:50%;">Sell it<span class="s">no cash yet</span></div>
+        <div class="lab" style="left:80%;">Get paid<span class="s">cash in</span></div>
+      </div>
+    </div></div>
+
+    <div class="eyebrow reveal">Three ways to free cash</div>
+    <div class="levers reveal">
+      <div class="lever">
+        <div class="anim"><div class="lv-bars"><div class="lv-bar"></div><div class="lv-bar"></div><div class="lv-bar"></div></div></div>
+        <h4>Hold less stock</h4>
+        <p>Keep what you need, not more. Money is not left sitting on a shelf.</p>
+      </div>
+      <div class="lever">
+        <div class="anim"><div class="lv-track"><div class="lv-coin"></div></div></div>
+        <h4>Get paid sooner</h4>
+        <p>Chase the oldest, riskiest invoices first. Cash comes back faster.</p>
+      </div>
+      <div class="lever">
+        <div class="anim"><div class="lv-cal"><span></span><span></span><span></span><span></span><span class="due"></span><div class="lv-pay"></div></div></div>
+        <h4>Pay on time, not early</h4>
+        <p>Hold your cash to the due date, unless paying early pays you back.</p>
+      </div>
+    </div>
+
+    <div class="eyebrow reveal">How the tool ranks what to do</div>
+    <div class="card reveal"><div class="bd">
+      <p class="hiw-say" style="margin-top:0;">Every action is measured the same way: how much cash it frees, and how safe it is. The list puts the biggest, safest cash first, so you know where to start.</p>
+      <div class="rankrule" style="margin-top:12px;">
+        <span class="rankchip"><b>1.</b> Cash it frees</span>
+        <span style="color:var(--muted);">+</span>
+        <span class="rankchip"><b>2.</b> How safe it is</span>
+        <span style="color:var(--muted);">&rarr;</span>
+        <span class="rankchip"><b>Rank</b> on the action list</span>
+      </div>
+    </div></div>
+
+    <div class="eyebrow reveal">Why freeing cash matters</div>
+    <div class="card reveal"><div class="bd">
+      <p class="hiw-say" style="margin-top:0;">Freeing cash does not change your profit. It lowers the money you have tied up to earn it. The same profit on less money is a better return.</p>
+      <div class="returnbox" style="margin-top:16px;">
+        <div class="retstat">
+          <div class="rk">Cash tied up</div>
+          <div class="rv" data-count="money" data-from="11.58" data-to="8.11">$0m</div>
+          <div class="rd">falls as you free cash</div>
+        </div>
+        <div class="retstat">
+          <div class="rk">Return on the money</div>
+          <div class="rv up" data-count="pct" data-from="11.9" data-to="12.6">0%</div>
+          <div class="rd">rises on a smaller base</div>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="eyebrow reveal">What the tool can and cannot measure</div>
+    <div class="card reveal"><div class="bd prose">
+      <p style="margin-top:0;">Working capital touches profit, cash, and the balance sheet. The tool is honest about what it can put a number on.</p>
+      <h4>Shown as a number</h4>
+      <p>Holding cost, stock written off, discounts taken or missed, the cash freed, and the return on capital.</p>
+      <h4>Shown as a flag, not a number</h4>
+      <p>Lost sales from running out of stock, from credit that is too tight, or from paying suppliers so late they raise prices. The data cannot size these, so the tool warns instead of inventing a figure that would mislead.</p>
+      <h4>Left as a setting you control</h4>
+      <p>The cost of the cash you tie up. You set the rate, and every figure that depends on it updates.</p>
+    </div></div>
+
+    <div class="eyebrow reveal">The exact working, for anyone who wants it</div>
+    <div class="grid g3 reveal">
+      <div class="card"><div class="hd"><h3>Stock</h3></div><div class="bd prose">
+        <p>Items are ranked by how much cash they turn over each year. The top few get the tightest cover.</p>
+        <p>Order size is the point where ordering cost and holding cost balance. Reorder point is daily demand times lead time, plus a buffer for uncertainty.</p>
+        <p>Dead stock is idle over 180 days. Overstock is more than 180 days of cover. Both trap cash.</p>
+      </div></div>
+      <div class="card"><div class="hd"><h3>Receivables</h3></div><div class="bd prose">
+        <p>Invoices are grouped by how overdue they are. The tool ranks accounts by the cash most at risk, which rises with age, not by the biggest balance.</p>
+        <p>An early-payment discount is taken only if it is worth more than the cost of the cash.</p>
+      </div></div>
+      <div class="card"><div class="hd"><h3>Payables</h3></div><div class="bd prose">
+        <p>Cash is held to the due date, unless a discount pays back more than it costs.</p>
+        <p>Paying early for no discount is flagged, with the cash it wastes shown.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <div class="foot" style="max-width:1120px;">Evalueserve Insightsfirst Working Capital Efficiency Tool. Demonstration build on a sample dataset. In deployment, figures come from your mapped extract and your settings.</div>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var fmt = {
+    money:function(n){ if(Math.abs(n)>=1e6) return '$'+(n/1e6).toFixed(2)+'m'; if(Math.abs(n)>=1e3) return '$'+(n/1e3).toFixed(0)+'k'; return '$'+Math.round(n).toLocaleString(); },
+    money0:function(n){ return '$'+Math.round(n).toLocaleString(); },
+    d:function(n){ return Math.round(n)+'d'; },
+    n:function(n){ return Math.round(n).toLocaleString(); }
+  };
+  var COC = 0.12, CARRY = 0.22, ORDER = 2500, RECOVERY = 0.35, DEAD_DAYS = 180, OVER_DAYS = 180;
+  var Zsvc = {0.90:1.2816,0.95:1.6449,0.98:2.0537,0.99:2.3263};
+  var Zclass = {A:0.98,B:0.95,C:0.90};
+
+  // Firm-level figures. The cycle metrics are the canonical headline and tie to the
+  // peer comparison; balances follow from them. Receivables and payables samples below
+  // reconcile to these; inventory is profiled as a sample extract of the full book.
+  var FIRM = {
+    dih:62, dso:58, dpo:41,
+    revenue:58000000, cogs:41000000,
+    nopat:7400000, investedCapital:62000000
+  };
+  FIRM.ccc = FIRM.dih + FIRM.dso - FIRM.dpo;
+  FIRM.inventory = FIRM.dih/365 * FIRM.cogs;   // 6.96m
+  FIRM.ar        = FIRM.dso/365 * FIRM.revenue; // 9.22m
+  FIRM.ap        = FIRM.dpo/365 * FIRM.cogs;    // 4.60m
+  FIRM.nwc       = FIRM.inventory + FIRM.ar - FIRM.ap;
+
+  // ---- Inventory sample ----
+  var SKUS = [
+    {id:'HEX-0418',desc:'Heat exchanger tube bundle',cost:4200,demand:900,onHand:120,lt:21,sd:1.2,idle:8},
+    {id:'PMP-0141',desc:'High-pressure pump seal kit',cost:1850,demand:1600,onHand:300,lt:28,sd:2.0,idle:5},
+    {id:'TRB-0207',desc:'Turbine bearing assembly',cost:640,demand:3800,onHand:900,lt:14,sd:6,idle:3},
+    {id:'MTR-0522',desc:'Motor VFD unit',cost:980,demand:1500,onHand:260,lt:35,sd:2.5,idle:6},
+    {id:'POS-1415',desc:'Valve positioner',cost:210,demand:5200,onHand:1400,lt:10,sd:9,idle:4},
+    {id:'GSK-0744',desc:'Gasket set, large bore',cost:45,demand:18000,onHand:5200,lt:7,sd:30,idle:2},
+    {id:'FLT-1073',desc:'Filter cartridge',cost:120,demand:4200,onHand:3600,lt:12,sd:8,idle:3},
+    {id:'VLV-0335',desc:'Control valve actuator',cost:1600,demand:300,onHand:40,lt:99,sd:0.6,idle:20},
+    {id:'LUB-0851',desc:'Specialty lubricant drum',cost:85,demand:5000,onHand:900,lt:9,sd:12,idle:4},
+    {id:'FST-0960',desc:'Fastener assortment',cost:22,demand:15000,onHand:4000,lt:6,sd:25,idle:3},
+    {id:'IMP-1188',desc:'Legacy pump impeller (obsolete line)',cost:540,demand:40,onHand:380,lt:30,sd:0.2,idle:240},
+    {id:'SNS-1294',desc:'Discontinued sensor module',cost:310,demand:0,onHand:520,lt:45,sd:0,idle:400},
+    {id:'CPL-1307',desc:'Coupling guard (discontinued)',cost:95,demand:60,onHand:1500,lt:20,sd:0.3,idle:210},
+    {id:'INS-0639',desc:'Instrumentation transmitter',cost:8,demand:40000,onHand:9000,lt:5,sd:60,idle:1}
+  ];
+
+  function computeInventory(){
+    SKUS.forEach(function(s){
+      s.usage = s.cost * s.demand;
+      s.stockValue = s.cost * s.onHand;
+      s.daily = s.demand/365;
+      s.dos = s.demand>0 ? (s.onHand / s.daily) : 9999; // days of supply
+      s.placeholder = (s.lt===99 || s.lt===999);
+      s.dead = (s.idle > DEAD_DAYS) || (s.demand===0 && s.onHand>0);
+    });
+    var sorted = SKUS.slice().sort(function(a,b){return b.usage-a.usage;});
+    var total = sorted.reduce(function(t,s){return t+s.usage;},0);
+    var cum=0;
+    sorted.forEach(function(s){ cum+=s.usage; var p=cum/total; s.cls = p<=0.70?'A':(p<=0.90?'B':'C'); });
+    SKUS.forEach(function(s){ policy(s, Zclass[s.cls]); });
+  }
+  function policy(s, svc){
+    var H = CARRY * s.cost;
+    s.eoq = s.demand>0 ? Math.sqrt(2*s.demand*ORDER/H) : 0;
+    var Z = Zsvc[svc] || 1.6449;
+    s.ss = Z * s.sd * Math.sqrt(s.lt);
+    s.rop = s.daily * s.lt + s.ss;
+    s.targetMax = s.rop + s.eoq;
+    if(!s.dead){
+      s.overstock = (s.dos > OVER_DAYS) && (s.onHand > s.targetMax);
+      s.excessUnits = s.overstock ? Math.max(0, s.onHand - s.targetMax) : 0;
+    } else { s.overstock=false; s.excessUnits=0; }
+    s.excessCash = s.excessUnits * s.cost;
+    s.status = s.dead ? 'dead' : (s.overstock ? 'over' : (s.placeholder ? 'place' : 'ok'));
+  }
+
+  // ---- Receivables sample ----
+  var CREDIT_SALES = 58000000;
+  var ACCTS = [
+    {n:'Meridian Industrial',cur:920000,b1:300000,b2:0,b3:0,b4:0},
+    {n:'Cascade Energy Svc',cur:260000,b1:170000,b2:370000,b3:270000,b4:210000},
+    {n:'Northgate Fabrication',cur:590000,b1:0,b2:0,b3:0,b4:0},
+    {n:'Vantage Petrochem',cur:320000,b1:130000,b2:100000,b3:90000,b4:490000},
+    {n:'Ridgeline Utilities',cur:750000,b1:90000,b2:0,b3:0,b4:0},
+    {n:'Kessler Components',cur:110000,b1:160000,b2:190000,b3:0,b4:0},
+    {n:'Aspen Downstream',cur:430000,b1:0,b2:0,b3:260000,b4:320000},
+    {n:'Brightwater Refining',cur:380000,b1:200000,b2:90000,b3:0,b4:0},
+    {n:'Coastal Marine Sup.',cur:130000,b1:0,b2:0,b3:0,b4:590000},
+    {n:'Halden Process',cur:690000,b1:100000,b2:0,b3:0,b4:0},
+    {n:'Turnbull Logistics',cur:210000,b1:60000,b2:140000,b3:100000,b4:0}
+  ];
+  var RISK = {b1:0.05,b2:0.15,b3:0.35,b4:0.60};
+
+  // ---- Payables sample ----
+  var PURCHASES = 41000000;
+  var SUPP = [
+    {n:'Delfor Steel',bal:820000,net:45,disc:0,dd:0,paid:38},
+    {n:'Arcon Chemicals',bal:610000,net:30,disc:0.02,dd:10,paid:12},
+    {n:'Primeline Castings',bal:540000,net:30,disc:0,dd:0,paid:18},
+    {n:'Novak Bearings',bal:470000,net:45,disc:0.01,dd:10,paid:11},
+    {n:'Sable Polymers',bal:430000,net:60,disc:0,dd:0,paid:44},
+    {n:'Corveth Electricals',bal:360000,net:30,disc:0,dd:0,paid:16},
+    {n:'Harlow Seals',bal:300000,net:30,disc:0.02,dd:10,paid:28},
+    {n:'Trentham Filters',bal:260000,net:45,disc:0,dd:0,paid:30},
+    {n:'Oakmere Fasteners',bal:420000,net:30,disc:0,dd:0,paid:14},
+    {n:'Ilford Instruments',bal:390000,net:45,disc:0.015,dd:10,paid:12}
+  ];
+
+  // ---- Peers sample ----
+  var REVENUE = 58000000;
+  var PEERS = [
+    {n:'Your firm',dih:62,dso:58,dpo:41,self:true},
+    {n:'Peer A',dih:48,dso:52,dpo:39},
+    {n:'Peer B',dih:58,dso:61,dpo:47},
+    {n:'Peer C',dih:41,dso:46,dpo:32},
+    {n:'Peer D',dih:71,dso:66,dpo:49},
+    {n:'Peer E',dih:55,dso:57,dpo:43}
+  ];
+  PEERS.forEach(function(p){ p.ccc = p.dih + p.dso - p.dpo; });
+
+  // ================= RENDER HELPERS =================
+  function el(html){
+    html = html.trim();
+    var d = document.createElement('div');
+    if(html.slice(0,3).toLowerCase()==='<tr'){
+      d.innerHTML = '<table><tbody>'+html+'</tbody></table>';
+      return d.querySelector('tr');
+    }
+    d.innerHTML = html;
+    return d.firstChild;
+  }
+
+  // ---- Glossary engine: hover-to-define for terms and abbreviations ----
+  var GLOSSARY = [
+    ['cash conversion cycle','Days between paying for stock and collecting the cash from its sale. Lower means less cash tied up.',false],
+    ['days inventory held','Average days stock sits before it is sold. Inventory / cost of goods sold x 365.',false],
+    ['days sales outstanding','Average days to collect cash after a sale. Receivables / credit sales x 365.',false],
+    ['days payable outstanding','Average days taken to pay suppliers. Payables / purchases x 365.',false],
+    ['economic order quantity','Order size that minimises the combined cost of ordering and holding stock.',false],
+    ['return on invested capital','Operating profit after tax divided by the capital invested in the business.',false],
+    ['placeholder lead time','A system default lead time (99 or 999 days), not a measured value, that inflates the buffer.',false],
+    ['net working capital','Inventory plus receivables minus payables; the cash tied up in operations.',false],
+    ['target max stock','Reorder point plus one order quantity; the level stock should not exceed.',false],
+    ['target maximum','Reorder point plus one order quantity; the level stock should not exceed.',false],
+    ['annualised return','A short-period rate expressed as a yearly rate, so it compares with the cost of capital.',false],
+    ['annualised cost','A short-period rate expressed as a yearly rate, so it compares with the cost of capital.',false],
+    ['inventory turns','Times per year stock is sold and replaced. Higher is leaner.',false],
+    ['aging schedule','Balances grouped by how overdue they are.',false],
+    ['dynamic discounting','Offering or taking an early-payment discount, priced against the cost of capital.',false],
+    ['cost of capital','The return the business must earn on the cash it ties up; the hurdle every figure is tested against.',false],
+    ['carrying cost','The annual cost of holding stock, as a share of its value.',false],
+    ['carrying rate','The annual cost of holding stock, as a share of its value.',false],
+    ['ordering cost','The fixed cost incurred each time an order is placed.',false],
+    ['working capital','Inventory plus receivables minus payables; the cash tied up in operations.',false],
+    ['invested capital','The capital funding the business; the base ROIC is measured against.',false],
+    ['reorder point','Stock level that triggers a new order, set to cover demand over the lead time plus a buffer.',false],
+    ['safety stock','Buffer held against demand and lead-time variability, sized to the service target.',false],
+    ['days of supply','Days the current stock would last at the current rate of demand.',false],
+    ['service target','The share of demand met from stock without a stockout.',false],
+    ['service level','The share of demand met from stock without a stockout.',false],
+    ['credit sales','Sales made on credit rather than for immediate cash; the base for DSO.',false],
+    ['cash at risk','Overdue balance weighted by how likely it is to be lost, rising with age.',false],
+    ['dead stock','Stock with no movement beyond the idle threshold. Cash at stake is its full value.',false],
+    ['placeholder','A system default lead time (such as 99 or 999 days), not a measured value, that inflates the buffer until it is corrected at source.',false],
+    ['disposal loss','The value lost when stock is sold below its book value.',false],
+    ['write-down','Reducing the book value of stock to reflect a loss.',false],
+    ['lead time','Days between placing a replenishment order and receiving it.',false],
+    ['overstock','Stock above the target maximum. Cash at stake is the excess value.',false],
+    ['stockout','Running out of stock and failing to meet demand.',false],
+    ['2/10 net 30','Pay within 10 days for a 2% discount, otherwise the full amount is due in 30 days.',false],
+    ['CCC','Cash conversion cycle: days between paying for stock and collecting the cash from its sale.',true],
+    ['DIH','Days inventory held: average days stock sits before it is sold.',true],
+    ['DSO','Days sales outstanding: average days to collect cash after a sale.',true],
+    ['DPO','Days payable outstanding: average days taken to pay suppliers.',true],
+    ['EOQ','Economic order quantity: the order size that minimises ordering plus holding cost.',true],
+    ['ROP','Reorder point: the stock level that triggers a replenishment order.',true],
+    ['ROIC','Return on invested capital: operating profit after tax over invested capital.',true],
+    ['NOPAT','Net operating profit after tax: profit from operations, before financing.',true],
+    ['NWC','Net working capital: inventory plus receivables minus payables.',true],
+    ['ABC','Segmentation that ranks items by the cash they turn over: A holds most of the value, C the least.',true]
+  ].map(function(g){ return {term:g[0], low:g[0].toLowerCase(), def:g[1], cs:g[2]}; })
+   .sort(function(a,b){ return b.term.length - a.term.length; });
+
+  function isWordChar(c){ return /[A-Za-z0-9]/.test(c); }
+  function buildTermFragment(text){
+    var frag = document.createDocumentFragment();
+    var buf = '', i = 0, made = false;
+    function flush(){ if(buf){ frag.appendChild(document.createTextNode(buf)); buf=''; } }
+    while(i < text.length){
+      var hit = null;
+      for(var t=0; t<GLOSSARY.length; t++){
+        var g = GLOSSARY[t], len = g.term.length, sub = text.substr(i,len);
+        if(sub.length!==len) continue;
+        var ok = g.cs ? (sub===g.term) : (sub.toLowerCase()===g.low);
+        if(!ok) continue;
+        var before = i>0 ? text[i-1] : ' ';
+        var after = (i+len)<text.length ? text[i+len] : ' ';
+        if(isWordChar(before) || isWordChar(after)) continue;
+        hit = {g:g, text:sub, len:len}; break; // longest-first ordering guarantees best match
+      }
+      if(hit){
+        flush();
+        var span = document.createElement('span');
+        span.className = 'g'; span.tabIndex = 0; span.textContent = hit.text;
+        var tip = document.createElement('span'); tip.className = 'tip'; tip.textContent = hit.g.def;
+        span.appendChild(tip); frag.appendChild(span);
+        i += hit.len; made = true;
+      } else { buf += text[i]; i++; }
+    }
+    flush();
+    return made ? frag : null;
+  }
+  var GLOSS_TARGETS = '.sub,.mini,.lede,.cap,.note,.eyebrow,.kpi .k,.card .hd h3,thead th,.barrow .lbl,.chain .step .k,.chain .step .v,.prose p,.prose h4,.adsec p,.adsec h5';
+  function wrapTermsIn(elem){
+    var walker = document.createTreeWalker(elem, NodeFilter.SHOW_TEXT, null, false);
+    var nodes = [], n;
+    while(n = walker.nextNode()){
+      if(!n.nodeValue.trim()) continue;
+      var a = n.parentNode, skip = false;
+      while(a && a!==elem.parentNode){ if(a.classList && a.classList.contains('g')){ skip=true; break; } a=a.parentNode; }
+      if(!skip) nodes.push(n);
+    }
+    nodes.forEach(function(node){ var frag = buildTermFragment(node.nodeValue); if(frag) node.parentNode.replaceChild(frag, node); });
+  }
+  function applyGlossary(root){
+    root = root || document.querySelector('.main');
+    if(!root) return;
+    var els = root.querySelectorAll(GLOSS_TARGETS);
+    for(var i=0;i<els.length;i++){ wrapTermsIn(els[i]); }
+  }
+
+  // ---- Dashboard: actions + health summaries ----
+  function actionItems(){
+    var dead = SKUS.filter(function(s){return s.dead;});
+    var deadStock = dead.reduce(function(t,s){return t+s.stockValue;},0);
+    var deadProceeds = deadStock*RECOVERY;
+    var deadCarry = deadStock*CARRY;
+    var over = SKUS.filter(function(s){return s.overstock;});
+    var overCash = over.reduce(function(t,s){return t+s.excessCash;},0);
+    var overCarry = overCash*CARRY;
+    var b4 = ACCTS.reduce(function(t,a){return t+a.b4;},0);
+    var b3 = ACCTS.reduce(function(t,a){return t+a.b3;},0);
+    var collectible = (b4*0.8 + b3*0.6);
+    var discCapture = SUPP.filter(function(s){return s.disc>0 && discReturn(s)>COC;}).reduce(function(t,s){return t + s.bal*s.disc;},0);
+    var early = SUPP.filter(function(s){return s.disc===0 && s.paid < s.net;});
+    var earlyRecurring = early.reduce(function(t,s){return t + s.bal*COC*((s.net-s.paid)/365);},0);
+    var earlyOneOff = early.reduce(function(t,s){return t + s.bal*((s.net-s.paid)/s.net);},0);
+    return [
+      {key:'deadstock',name:'Liquidate dead stock',part:'Inventory',one:deadProceeds,rec:deadCarry,nwc:deadStock,basis:'Full stock value; '+Math.round(RECOVERY*100)+'% recovery on disposal'},
+      {key:'receivables',name:'Collect overdue receivables (60+ days)',part:'Receivables',one:collectible,rec:0,nwc:collectible,basis:'Age-weighted recovery on 60+ balances'},
+      {key:'overstock',name:'Right-size overstocked SKUs',part:'Inventory',one:overCash,rec:overCarry,nwc:overCash,basis:'Units above target maximum x unit cost'},
+      {key:'holdpay',name:'Hold payments to due date',part:'Payables',one:earlyOneOff,rec:earlyRecurring,nwc:earlyOneOff,basis:'Cash released by paying on terms, not early'},
+      {key:'discounts',name:'Capture supplier discounts above hurdle',part:'Payables',one:0,rec:discCapture,nwc:0,basis:'Discounts with annualised return above cost of capital'}
+    ].sort(function(a,b){ return (b.one+b.rec*3) - (a.one+a.rec*3); });
+  }
+  function discReturn(s){ if(s.disc<=0) return 0; return (s.disc/(1-s.disc))*(365/(s.net-s.dd)); }
+
+  function actionTotals(){
+    var items = actionItems();
+    return {
+      items:items,
+      one: items.reduce(function(t,a){return t+a.one;},0),
+      rec: items.reduce(function(t,a){return t+a.rec;},0),
+      nwc: items.reduce(function(t,a){return t+a.nwc;},0)
+    };
+  }
+  function peerStats(){
+    var self=PEERS.filter(function(p){return p.self;})[0];
+    var others=PEERS.filter(function(p){return !p.self;}).map(function(p){return p.ccc;}).sort(function(a,b){return a-b;});
+    var best=Math.min.apply(null,others);
+    var median=others[Math.floor(others.length/2)];
+    return {self:self.ccc, best:best, median:median, daily:FIRM.revenue/365};
+  }
+  function setV(id, num, unit){ var e=document.getElementById(id); if(e) e.innerHTML = num + (unit?'<span class="un">'+unit+'</span>':''); }
+
+  var ACT = null;
+  function renderDashboard(){
+    ACT = actionItems();
+    var tot = actionTotals();
+    var ps = peerStats();
+    // headline KPIs, all engine-driven
+    setV('kCCC', FIRM.ccc, 'days');
+    document.getElementById('kCCCd').textContent = '+'+(ps.self-ps.best)+'d vs best peer';
+    setV('kDIH', FIRM.dih, 'days');
+    setV('kDSO', FIRM.dso, 'days');
+    setV('kDPO', FIRM.dpo, 'days');
+    document.getElementById('kInvBal').textContent = 'Inventory '+fmt.money(FIRM.inventory);
+    document.getElementById('kArBal').textContent = 'Receivables '+fmt.money(FIRM.ar);
+    document.getElementById('kApBal').textContent = 'Payables '+fmt.money(FIRM.ap);
+    setV('kNWC', '$'+(FIRM.nwc/1e6).toFixed(2), 'm');
+    setV('kRelease', '$'+(tot.one/1e6).toFixed(2), 'm');
+    document.getElementById('kReleaseR').textContent = '+ '+fmt.money(tot.rec)+' / yr recurring';
+    var roic0=FIRM.nopat/FIRM.investedCapital, roic1=FIRM.nopat/(FIRM.investedCapital-tot.nwc);
+    setV('kROIC', (roic0*100).toFixed(1), '%');
+    document.getElementById('kROICd').innerHTML = '&rarr; '+(roic1*100).toFixed(1)+'% after actions';
+
+    var wrap = document.getElementById('dashActions');
+    wrap.innerHTML='';
+    ACT.slice(0,4).forEach(function(a,i){
+      var v = a.one>0 ? fmt.money(a.one) : fmt.money(a.rec)+'/yr';
+      var row = el('<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer;">'
+        +'<span class="mini" style="width:16px;color:var(--magenta);font-weight:700;">'+(i+1)+'</span>'
+        +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+a.name+'</div><div class="mini">'+a.part+'</div></div>'
+        +'<div style="font-family:var(--fm);font-size:13px;font-weight:700;color:var(--purple);">'+v+'</div></div>');
+      row.addEventListener('click',function(){ go('actions'); showActionDetail(a.key); });
+      wrap.appendChild(row);
+    });
+    // health summary
+    var flags = healthRecords();
+    var h = document.getElementById('dashHealth'); h.innerHTML='';
+    h.appendChild(el('<div class="barrow"><span class="lbl">Flagged</span><div class="track"><div class="fill hot" style="width:'+Math.min(100,flags.length*14)+'%"></div></div><span class="val">'+flags.length+' records</span></div>'));
+    var place = SKUS.filter(function(s){return s.placeholder;}).length;
+    h.appendChild(el('<div class="barrow"><span class="lbl">Placeholder lead time</span><div class="track"><div class="fill" style="width:'+Math.min(100,place*20)+'%"></div></div><span class="val">'+place+' SKUs</span></div>'));
+    h.appendChild(el('<div class="mini" style="margin-top:8px;">Correcting placeholder lead times releases safety stock inflated by the 99-day default on the valve actuator. See Data Health for the full list.</div>'));
+  }
+
+  // ---- Inventory ----
+  function renderInventory(){
+    var totalVal = SKUS.reduce(function(t,s){return t+s.stockValue;},0);
+    var aVal = SKUS.filter(function(s){return s.cls==='A';}).reduce(function(t,s){return t+s.usage;},0);
+    var totUsage = SKUS.reduce(function(t,s){return t+s.usage;},0);
+    var aCount = SKUS.filter(function(s){return s.cls==='A';}).length;
+    var dead = SKUS.filter(function(s){return s.dead;});
+    var deadCash = dead.reduce(function(t,s){return t+s.stockValue;},0);
+    var over = SKUS.filter(function(s){return s.overstock;});
+    var overCash = over.reduce(function(t,s){return t+s.excessCash;},0);
+    document.getElementById('ivValue').textContent = fmt.money(totalVal);
+    document.getElementById('ivA').innerHTML = Math.round(aVal/totUsage*100)+'<span class="un">%</span>';
+    document.getElementById('ivAcount').textContent = aCount+' SKUs';
+    document.getElementById('ivDead').textContent = fmt.money(deadCash);
+    document.getElementById('ivDeadN').textContent = dead.length+' SKUs idle > 180d';
+    document.getElementById('ivOver').textContent = fmt.money(overCash);
+    document.getElementById('ivOverN').textContent = over.length+' SKU'+(over.length===1?'':'s')+' above target maximum';
+
+    // ABC bars
+    var byClass = {A:{n:0,v:0},B:{n:0,v:0},C:{n:0,v:0}};
+    SKUS.forEach(function(s){ byClass[s.cls].n++; byClass[s.cls].v+=s.usage; });
+    var abc = document.getElementById('abcBars'); abc.innerHTML='';
+    ['A','B','C'].forEach(function(c){
+      var pv = byClass[c].v/totUsage*100, pn = byClass[c].n/SKUS.length*100;
+      abc.appendChild(el('<div class="barrow"><span class="lbl">Class '+c+' · value</span><div class="track"><div class="fill" style="width:'+pv.toFixed(1)+'%"></div></div><span class="val">'+pv.toFixed(0)+'%</span></div>'));
+      abc.appendChild(el('<div class="barrow"><span class="lbl">Class '+c+' · SKUs</span><div class="track"><div class="fill" style="width:'+pn.toFixed(1)+'%;background:#c9b6d1;"></div></div><span class="val">'+pn.toFixed(0)+'%</span></div>'));
+    });
+
+    // table
+    var tb = document.querySelector('#invTable tbody'); tb.innerHTML='';
+    var order = SKUS.slice().sort(function(a,b){return b.usage-a.usage;});
+    order.forEach(function(s){
+      var st = s.status==='dead'?'<span class="tag warn">Dead</span>':s.status==='over'?'<span class="tag warn">Overstock</span>':s.status==='place'?'<span class="tag warn">Placeholder</span>':'<span class="tag ok">OK</span>';
+      var tr = el('<tr class="rowsel" data-sku="'+s.id+'"><td style="font-family:var(--fm);font-size:12px;">'+s.id+'</td><td>'+s.desc+'</td>'
+        +'<td><span class="tag '+s.cls.toLowerCase()+'">'+s.cls+'</span></td>'
+        +'<td class="num">'+fmt.money0(s.cost)+'</td><td class="num">'+fmt.n(s.demand)+'</td><td class="num">'+fmt.n(s.onHand)+'</td>'
+        +'<td class="num">'+s.lt+'d'+(s.placeholder?' <span class="hot">!</span>':'')+'</td><td class="num">'+fmt.money0(s.stockValue)+'</td><td>'+st+'</td></tr>');
+      tr.addEventListener('click',function(){ selectSku(s.id); });
+      tb.appendChild(tr);
+    });
+
+    // populate SKU dropdown
+    var sel = document.getElementById('skuSel');
+    if(sel && !sel.dataset.built){
+      sel.innerHTML = order.map(function(s){ return '<option value="'+s.id+'">'+s.id+' \u00b7 '+s.desc+'</option>'; }).join('');
+      sel.dataset.built='1';
+    }
+
+    // default selection: an obsolete SKU so the dead case reads immediately
+    var firstDead = order.filter(function(s){return s.dead;})[0] || order[0];
+    selectSku(currentSku || firstDead.id);
+  }
+  function line(label,val){ return '<div class="line"><span>'+label+'</span><span class="n">'+val+'</span></div>'; }
+  function card(label,val,unit,tone){
+    var cls = tone==='hot'?' style="color:var(--magenta)"':tone==='good'?' style="color:var(--up)"':'';
+    return '<div class="kpi"><div class="k">'+label+'</div><div class="v"'+cls+'>'+val+(unit?'<span class="un">'+unit+'</span>':'')+'</div></div>';
+  }
+
+  var currentSku = null;
+  function selectSku(id){
+    var s = SKUS.filter(function(x){return x.id===id;})[0]; if(!s) return;
+    currentSku = id;
+    document.querySelectorAll('#invTable tbody tr').forEach(function(tr){ tr.classList.toggle('sel', tr.getAttribute('data-sku')===id); });
+    var dd = document.getElementById('skuSel'); if(dd && dd.value!==id) dd.value=id;
+
+    var svc = parseFloat(document.getElementById('svcSel').value);
+    var H = CARRY*s.cost;
+    var eoq = s.demand>0 ? Math.sqrt(2*s.demand*ORDER/H) : 0;
+    var Z = Zsvc[svc];
+    var ss = Z*s.sd*Math.sqrt(s.lt);
+    var rop = s.daily*s.lt + ss;
+    var tmax = rop + eoq;
+    var dos = s.demand>0 ? s.onHand/s.daily : null;
+    var turns = s.demand>0 ? s.demand/s.onHand : 0;
+    var statusTag = s.dead ? '<span class="tag warn">Dead</span>' : s.overstock ? '<span class="tag warn">Overstock</span>' : s.placeholder ? '<span class="tag warn">Placeholder</span>' : '<span class="tag ok">Within policy</span>';
+
+    var cards = document.getElementById('calcCards');
+    cards.innerHTML =
+        '<div class="kpi"><div class="k">Class</div><div class="v"><span class="tag '+s.cls.toLowerCase()+'" style="font-size:13px;">'+s.cls+'</span></div></div>'
+      + card('Order quantity', s.demand>0?Math.round(eoq):'&mdash;', s.demand>0?'u':'')
+      + card('Unit cost', fmt.money0(s.cost))
+      + card('Days of supply', dos===null?'&mdash;':fmt.n(dos), dos===null?'':'d', dos!==null&&dos>OVER_DAYS?'hot':'')
+      + card('Turns', turns.toFixed(1), 'x')
+      + card('Reorder point', s.demand>0?Math.round(rop):'&mdash;', s.demand>0?'u':'')
+      + card('Safety stock', Math.round(ss), 'u')
+      + card('Target max stock', s.demand>0?Math.round(tmax):'&mdash;', s.demand>0?'u':'')
+      + card('Lead time', s.lt, 'd', s.placeholder?'hot':'')
+      + '<div class="kpi"><div class="k">Status</div><div class="v" style="font-size:15px;">'+statusTag+'</div></div>';
+
+    var note = document.getElementById('calcNote');
+    note.innerHTML =
+        (s.placeholder ? '<div class="note" style="margin-top:12px;"><span class="l">Placeholder lead time</span>The '+s.lt+'-day lead time is a system default, not a real measurement. It pushes the buffer and reorder point too high. Fix it at source before trusting these figures.</div>' : '')
+      + (s.dead ? '<div class="note" style="margin-top:12px;"><span class="l">Dead stock</span>Not used in '+s.idle+' days. The cash at stake is the full value, '+fmt.money0(s.stockValue)+'. Order and reorder figures do not apply while there is no demand.</div>' : '')
+      + (s.overstock ? '<div class="note" style="margin-top:12px;"><span class="l">Overstock</span>'+fmt.n(dos)+' days of cover on hand, above the 180-day mark. The cash at stake is the '+fmt.n(s.excessUnits)+' units above target, '+fmt.money0(s.excessCash)+'.</div>' : '')
+      + (!s.placeholder && !s.dead && !s.overstock ? '<div class="note calm" style="margin-top:12px;"><span class="l">Within policy</span>Cover sits inside the reorder band. The buffer is earned by the '+Math.round(svc*100)+'% service target for a Class '+s.cls+' item. No cash to free here.</div>' : '');
+
+    renderSkuStatement(s);
+    applyGlossary(document.getElementById('inventory'));
+  }
+
+  function renderSkuStatement(s){
+    document.getElementById('stmtSku').textContent = s.id + ' \u00b7 ' + s.desc;
+    var stmt = document.getElementById('skuStmt');
+    var stmtNote = document.getElementById('stmtNote');
+    if(s.dead){
+      var proceeds=s.stockValue*RECOVERY, carry=s.stockValue*CARRY, loss=s.stockValue*(1-RECOVERY);
+      stmt.innerHTML =
+        '<div class="col"><h5>Cash flow</h5>'+line('Disposal proceeds (one-off)','+'+fmt.money0(proceeds))+line('Carrying cost avoided / yr','+'+fmt.money0(carry))+'</div>'
+        +'<div class="col"><h5>Balance sheet</h5>'+line('Inventory','&minus;'+fmt.money0(s.stockValue))+line('Net working capital','&minus;'+fmt.money0(s.stockValue))+line('Invested-capital base','lowered')+'</div>'
+        +'<div class="col"><h5>Income statement</h5>'+line('Carrying cost saved / yr','+'+fmt.money0(carry))+line('Disposal loss (one-off)','&minus;'+fmt.money0(loss))+'</div>';
+      stmtNote.innerHTML = '<div class="note calm"><span class="l">Read</span>The loss on sale is not new money lost. It was already gone, in stock you cannot sell. Selling turns part of it back into cash. Nothing needs this stock, so there is no risk of running short.</div>';
+    } else if(s.overstock){
+      var rel=s.excessCash, csave=s.excessCash*CARRY;
+      stmt.innerHTML =
+        '<div class="col"><h5>Cash flow</h5>'+line('Cash released (one-off)','+'+fmt.money0(rel))+line('Carrying cost avoided / yr','+'+fmt.money0(csave))+'</div>'
+        +'<div class="col"><h5>Balance sheet</h5>'+line('Inventory','&minus;'+fmt.money0(rel))+line('Net working capital','&minus;'+fmt.money0(rel))+line('Invested-capital base','lowered')+'</div>'
+        +'<div class="col"><h5>Income statement</h5>'+line('Carrying cost saved / yr','+'+fmt.money0(csave))+line('Write-down','none')+'</div>';
+      stmtNote.innerHTML = '<div class="note calm"><span class="l">Read</span>Running the stock down to your target frees the cash held in the extra units. The stock is still good, so nothing is written off. You hold less until demand uses it up.</div>';
+    } else {
+      stmt.innerHTML =
+        '<div class="col"><h5>Cash flow</h5>'+line('Cash released','none')+'</div>'
+        +'<div class="col"><h5>Balance sheet</h5>'+line('Inventory','unchanged')+'</div>'
+        +'<div class="col"><h5>Income statement</h5>'+line('Effect','none')+'</div>';
+      stmtNote.innerHTML = '<div class="note calm"><span class="l">Read</span>This item is within policy. Its buffer is cash doing its job, keeping you in stock. It is not spare cash to free. Cutting it here would risk running out of a Class '+s.cls+' item.</div>';
+    }
+  }
+
+  // ---- Receivables ----
+  function renderReceivables(){
+    var totals={cur:0,b1:0,b2:0,b3:0,b4:0,bal:0,risk:0};
+    ACCTS.forEach(function(a){
+      a.bal = a.cur+a.b1+a.b2+a.b3+a.b4;
+      a.risk = a.b1*RISK.b1 + a.b2*RISK.b2 + a.b3*RISK.b3 + a.b4*RISK.b4;
+      ['cur','b1','b2','b3','b4','bal','risk'].forEach(function(k){ totals[k]+=a[k]; });
+    });
+    var dso = totals.bal / CREDIT_SALES * 365;
+    var over60 = totals.b3+totals.b4;
+    document.getElementById('rcAR').textContent = fmt.money(totals.bal);
+    document.getElementById('rcDSO').textContent = Math.round(dso);
+    var termGap = Math.round(dso) - 45;
+    document.getElementById('rcDSOd').textContent = (termGap>0?'+':'')+termGap+'d vs terms (net 45)';
+    document.getElementById('rcOver').textContent = fmt.money(over60);
+    document.getElementById('rcOverN').textContent = 'across '+ACCTS.filter(function(a){return (a.b3+a.b4)>0;}).length+' accounts';
+    document.getElementById('rcRisk').textContent = fmt.money(totals.risk);
+
+    var bars = document.getElementById('agingBars'); bars.innerHTML='';
+    var buckets=[['Current',totals.cur,'#c9b6d1'],['1\u201330',totals.b1,'#b79ac6'],['31\u201360',totals.b2,'var(--purple-mid)'],['61\u201390',totals.b3,'#a0407a'],['90+',totals.b4,'var(--magenta)']];
+    var max=Math.max.apply(null,buckets.map(function(b){return b[1];}));
+    buckets.forEach(function(b){
+      bars.appendChild(el('<div class="barrow"><span class="lbl">'+b[0]+'</span><div class="track"><div class="fill" style="width:'+(b[1]/max*100).toFixed(1)+'%;background:'+b[2]+';"></div></div><span class="val">'+fmt.money0(b[1])+'</span></div>'));
+    });
+
+    var tb=document.querySelector('#rcTable tbody'); tb.innerHTML='';
+    ACCTS.slice().sort(function(a,b){return b.risk-a.risk;}).forEach(function(a){
+      var hot = a.risk>150000;
+      tb.appendChild(el('<tr><td>'+a.n+'</td><td class="num">'+fmt.money0(a.bal)+'</td><td class="num mut">'+fmt.money0(a.cur)+'</td><td class="num mut">'+fmt.money0(a.b1)+'</td><td class="num">'+fmt.money0(a.b2)+'</td><td class="num">'+fmt.money0(a.b3)+'</td><td class="num'+(a.b4>0?' hot':'')+'">'+fmt.money0(a.b4)+'</td><td class="num" style="font-weight:700;color:'+(hot?'var(--magenta)':'var(--purple)')+'">'+fmt.money0(a.risk)+'</td></tr>'));
+    });
+    tb.appendChild(el('<tr style="border-top:2px solid var(--line);font-weight:700;"><td>All accounts</td><td class="num">'+fmt.money0(totals.bal)+'</td><td class="num mut">'+fmt.money0(totals.cur)+'</td><td class="num mut">'+fmt.money0(totals.b1)+'</td><td class="num">'+fmt.money0(totals.b2)+'</td><td class="num">'+fmt.money0(totals.b3)+'</td><td class="num">'+fmt.money0(totals.b4)+'</td><td class="num" style="color:var(--purple);">'+fmt.money0(totals.risk)+'</td></tr>'));
+
+    // discount test
+    var terms=[['2/10 net 45',0.02,10,45],['1/10 net 30',0.01,10,30],['2/10 net 30',0.02,10,30],['1/15 net 60',0.01,15,60]];
+    var dt=document.querySelector('#discTable tbody'); dt.innerHTML='';
+    terms.forEach(function(t){
+      var ann=(t[1]/(1-t[1]))*(365/(t[3]-t[2]));
+      var ok = ann < COC;
+      dt.appendChild(el('<tr><td>'+t[0]+'</td><td class="num">'+(ann*100).toFixed(1)+'%</td><td class="num mut">'+(COC*100).toFixed(1)+'%</td><td>'+(ok?'<span class="tag ok">Worth offering</span>':'<span class="tag warn">Costs more than capital</span>')+'</td></tr>'));
+    });
+  }
+
+  // ---- Payables ----
+  function renderPayables(){
+    var apTotal=SUPP.reduce(function(t,s){return t+s.bal;},0);
+    var dpo=apTotal/PURCHASES*365;
+    var discVal=0, earlyVal=0;
+    SUPP.forEach(function(s){
+      s.ret=discReturn(s);
+      s.takeDisc = s.disc>0 && s.ret>COC;
+      s.payEarly = s.disc===0 && s.paid < s.net;
+      if(s.takeDisc) discVal += s.bal*s.disc;
+      if(s.payEarly) earlyVal += s.bal*COC*((s.net-s.paid)/365);
+    });
+    document.getElementById('pyAP').textContent=fmt.money(apTotal);
+    document.getElementById('pyDPO').textContent=Math.round(dpo);
+    document.getElementById('pyDisc').textContent=fmt.money(discVal);
+    document.getElementById('pyEarly').textContent=fmt.money(earlyVal);
+
+    var tb=document.querySelector('#pyTable tbody'); tb.innerHTML='';
+    SUPP.slice().sort(function(a,b){return b.bal-a.bal;}).forEach(function(s){
+      var termTxt = s.disc>0 ? (Math.round(s.disc*100)+'/'+s.dd+' net '+s.net) : ('net '+s.net);
+      var rec, retTxt;
+      if(s.takeDisc){ rec='<span class="tag ok">Take discount, pay day '+s.dd+'</span>'; retTxt=(s.ret*100).toFixed(0)+'%'; }
+      else if(s.payEarly){ rec='<span class="tag warn">Hold to day '+s.net+' ('+(s.net-s.paid)+'d early)</span>'; retTxt='&mdash;'; }
+      else if(s.disc>0){ rec='<span class="tag flat">Decline, return below hurdle</span>'; retTxt=(s.ret*100).toFixed(0)+'%'; }
+      else { rec='<span class="tag ok">On terms</span>'; retTxt='&mdash;'; }
+      tb.appendChild(el('<tr><td>'+s.n+'</td><td class="num">'+fmt.money0(s.bal)+'</td><td class="mini">'+termTxt+'</td><td class="num">day '+s.paid+'</td><td class="num'+(s.takeDisc?' good':'')+'">'+retTxt+'</td><td>'+rec+'</td></tr>'));
+    });
+  }
+
+  // ---- Actions ----
+  function renderActions(){
+    var tot = actionTotals();
+    ACT = tot.items;
+    var oneT=tot.one, recT=tot.rec, nwcT=tot.nwc;
+    document.getElementById('acOne').textContent=fmt.money(oneT);
+    document.getElementById('acRec').textContent=fmt.money(recT);
+
+    var NOPAT=FIRM.nopat, IC=FIRM.investedCapital;
+    var roic0=NOPAT/IC, roic1=NOPAT/(IC-nwcT);
+    document.getElementById('acRoic').textContent=(roic0*100).toFixed(1)+'% \u2192 '+(roic1*100).toFixed(1)+'%';
+    document.getElementById('acRoicD').textContent='+'+((roic1-roic0)*100).toFixed(2)+' pp on '+fmt.money(nwcT)+' released';
+
+    var tb=document.querySelector('#acTable tbody'); tb.innerHTML='';
+    ACT.forEach(function(a,i){
+      var tr=el('<tr class="rowsel" data-key="'+a.key+'"><td class="mini" style="color:var(--magenta);font-weight:700;">'+(i+1)+'</td><td style="font-weight:600;">'+a.name+'</td><td><span class="tag flat">'+a.part+'</span></td>'
+        +'<td class="num">'+(a.one>0?fmt.money0(a.one):'&mdash;')+'</td><td class="num">'+(a.rec>0?fmt.money0(a.rec):'&mdash;')+'</td><td class="num">'+(a.nwc>0?fmt.money0(a.nwc):'&mdash;')+'</td></tr>');
+      tr.addEventListener('click',function(){ showActionDetail(a.key); });
+      tb.appendChild(tr);
+    });
+    showActionDetail(currentAction || ACT[0].key);
+
+    // roic waterfall (simple)
+    var w=document.getElementById('roicWaterfall'); w.innerHTML='';
+    w.appendChild(el('<div class="barrow"><span class="lbl">Invested capital now</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">'+fmt.money(IC)+'</span></div>'));
+    w.appendChild(el('<div class="barrow"><span class="lbl">Capital released</span><div class="track"><div class="fill hot" style="width:'+(nwcT/IC*100).toFixed(1)+'%"></div></div><span class="val hot">&minus;'+fmt.money(nwcT)+'</span></div>'));
+    w.appendChild(el('<div class="barrow"><span class="lbl">Invested capital after</span><div class="track"><div class="fill" style="width:'+((IC-nwcT)/IC*100).toFixed(1)+'%;background:var(--up);"></div></div><span class="val good">'+fmt.money(IC-nwcT)+'</span></div>'));
+    w.appendChild(el('<div class="mini" style="margin-top:8px;">ROIC = operating profit '+fmt.money(NOPAT)+' / invested capital. Releasing '+fmt.money(nwcT)+' lifts it from '+(roic0*100).toFixed(1)+'% to '+(roic1*100).toFixed(1)+'%.</div>'));
+  }
+
+  var currentAction = null;
+  var ACTION_COPY = {
+    deadstock:{
+      what:'Sell off stock that has not moved in over 180 days and will not sell. It is cash sitting on a shelf, earning nothing.',
+      how:'Cash freed is what you recover on sale, about 35 cents on the dollar. Each year you also save the cost of holding it. The capital released is the full value, because the stock leaves the books.',
+      exact:'Cash freed = 35% x stock value.  Capital released = full stock value.  Yearly saving = 22% x stock value.',
+      watch:'You are not losing new money. The loss was already there, in stock you cannot sell. Selling turns part of it back into cash. Nothing needs this stock, so there is no risk of running short.',
+      step:'Send these lines to disposal or scrap this quarter.',
+      records:function(){ return SKUS.filter(function(s){return s.dead;}).map(function(s){return [s.id+' '+s.desc, fmt.money0(s.stockValue)];}); }
+    },
+    receivables:{
+      what:'Chase the invoices that are more than 60 days overdue first. These are the ones most likely to never be paid.',
+      how:'Cash freed is a careful estimate of what you can still collect: most of the very oldest debts, and more than half of the rest. For this move the capital released equals the cash you collect.',
+      exact:'Cash freed = 80% of the 90+ debts + 60% of the 61 to 90 debts.',
+      watch:'Pushing too hard can upset a good customer. Start where the most cash is at risk, and keep the relationship in mind.',
+      step:'Give the top accounts to named owners with a two-week target.',
+      records:function(){ return ACCTS.slice().sort(function(a,b){return b.risk-a.risk;}).slice(0,5).map(function(a){return [a.n, fmt.money0(a.risk)+' at risk'];}); }
+    },
+    overstock:{
+      what:'Run down stock you hold well above what you need, on lines with more than 180 days of cover.',
+      how:'Cash freed is the extra units above your target, at what they cost. Each year you also save the cost of holding them. Nothing is written off, because the stock is still good.',
+      exact:'Cash freed = units above target x unit cost.  Yearly saving = 22% x that value.',
+      watch:'Pause new orders until stock falls back to the reorder point. Check demand is steady first, so you do not cut too deep and run short.',
+      step:'Freeze reorders on these lines until stock reaches the reorder point.',
+      records:function(){ return SKUS.filter(function(s){return s.overstock;}).map(function(s){return [s.id+' '+s.desc, fmt.money0(s.excessCash)+' excess'];}); }
+    },
+    holdpay:{
+      what:'Stop paying suppliers early when paying early earns you nothing. The cash is worth more in your hands until it is due.',
+      how:'Cash freed is each early payment held back to its due date. Each year you also save the interest on that cash.',
+      exact:'Cash freed = balance x (days paid early / terms).  Interest saved = balance x rate x (days early / 365).',
+      watch:'Paying on the due date is fine. Paying late to stretch further can backfire: suppliers may raise prices or slow delivery, which puts the cash back into stock.',
+      step:'Move these payments to their due date. No contract change is needed.',
+      records:function(){ return SUPP.filter(function(s){return s.payEarly;}).map(function(s){return [s.n, (s.net-s.paid)+'d early'];}); }
+    },
+    discounts:{
+      what:'Take an early-payment discount only when it is worth more than the cost of the cash. Skip the rest.',
+      how:'A small discount for paying a few weeks early is a high return once you turn it into a yearly rate. If that rate beats your cost of capital, take it.',
+      exact:'Yearly return = (discount / (1 - discount)) x (365 / days saved).  Take it if it beats your cost of capital.',
+      watch:'You need the cash ready by day 10 to take these. Line them up against the cash the other moves free up.',
+      step:'Set these suppliers to pay on the discount date.',
+      records:function(){ return SUPP.filter(function(s){return s.takeDisc;}).map(function(s){return [s.n, (s.ret*100).toFixed(0)+'% return'];}); }
+    }
+  };
+  function showActionDetail(key){
+    var item = (ACT||[]).filter(function(a){return a.key===key;})[0];
+    var copy = ACTION_COPY[key];
+    if(!item || !copy) return;
+    currentAction = key;
+    var rank = ACT.indexOf(item)+1;
+    document.querySelectorAll('#acTable tbody tr').forEach(function(tr){ tr.classList.toggle('sel', tr.getAttribute('data-key')===key); });
+    document.getElementById('acDetailNo').textContent = 'Rank '+rank+' \u00b7 '+item.part;
+    var recs = copy.records();
+    var recHTML = recs.length ? recs.map(function(r){ return '<div class="adrec"><span>'+r[0]+'</span><span class="rn">'+r[1]+'</span></div>'; }).join('') : '<div class="mini">None on the current sample.</div>';
+    document.getElementById('acDetail').innerHTML =
+      '<div style="font-size:15px;font-weight:700;color:var(--purple);margin-bottom:10px;">'+item.name+'</div>'
+      + '<div class="adval">'
+        + '<div class="b"><div class="k">Cash freed</div><div class="v">'+(item.one>0?fmt.money(item.one):'&mdash;')+'</div></div>'
+        + '<div class="b"><div class="k">Saved / yr</div><div class="v">'+(item.rec>0?fmt.money(item.rec):'&mdash;')+'</div></div>'
+        + '<div class="b"><div class="k">Capital released</div><div class="v">'+(item.nwc>0?fmt.money(item.nwc):'&mdash;')+'</div></div>'
+      + '</div>'
+      + '<div class="adsec"><h5>What it is</h5><p>'+copy.what+'</p></div>'
+      + '<div class="adsec"><h5>How the number is found</h5><p>'+copy.how+'</p>'
+        + '<div style="margin-top:7px;font-family:var(--fm);font-size:11.5px;color:var(--purple);background:var(--mist);border:1px solid var(--line);border-radius:7px;padding:8px 10px;">'+copy.exact+'</div></div>'
+      + '<div class="adsec"><h5>Records affected</h5>'+recHTML+'</div>'
+      + '<div class="adsec"><h5>What to watch</h5><p>'+copy.watch+'</p></div>'
+      + '<div class="note calm" style="margin-top:13px;"><span class="l">Step</span>'+copy.step+'</div>';
+    applyGlossary(document.getElementById('acDetail'));
+  }
+
+  // ---- Peers ----
+  function renderPeers(){
+    var self=PEERS.filter(function(p){return p.self;})[0];
+    var others=PEERS.filter(function(p){return !p.self;});
+    var cccs=others.map(function(p){return p.ccc;}).sort(function(a,b){return a-b;});
+    var median=cccs[Math.floor(cccs.length/2)];
+    var best=Math.min.apply(null,cccs);
+    var daily=REVENUE/365;
+    document.getElementById('peCCC').textContent=self.ccc;
+    document.getElementById('peMed').textContent=median;
+    document.getElementById('peMedGap').textContent=(self.ccc-median>0?'+':'')+(self.ccc-median)+'d vs median';
+    document.getElementById('peBest').textContent=best;
+    document.getElementById('peBestGap').textContent='+'+(self.ccc-best)+'d behind best';
+    document.getElementById('peCash').textContent=fmt.money((self.ccc-best)*daily);
+    document.getElementById('kCCCd').textContent='+'+(self.ccc-best)+'d vs best peer';
+
+    var bars=document.getElementById('peerBars'); bars.innerHTML='';
+    var maxCcc=Math.max.apply(null,PEERS.map(function(p){return p.ccc;}));
+    PEERS.slice().sort(function(a,b){return a.ccc-b.ccc;}).forEach(function(p){
+      var color = p.self?'var(--magenta)':(p.ccc===best?'var(--up)':'var(--purple-mid)');
+      bars.appendChild(el('<div class="barrow"><span class="lbl" style="'+(p.self?'color:var(--magenta);font-weight:700;':'')+'">'+p.n+'</span><div class="track"><div class="fill" style="width:'+(p.ccc/maxCcc*100).toFixed(1)+'%;background:'+color+';"></div></div><span class="val">'+p.ccc+'d</span></div>'));
+    });
+
+    var tb=document.querySelector('#peerTable tbody'); tb.innerHTML='';
+    PEERS.forEach(function(p){
+      var gap=p.self?0:(self.ccc-p.ccc);
+      var cash=gap*daily;
+      tb.appendChild(el('<tr'+(p.self?' style="background:var(--mist);font-weight:600;"':'')+'><td>'+p.n+'</td><td class="num">'+p.dih+'</td><td class="num">'+p.dso+'</td><td class="num">'+p.dpo+'</td><td class="num" style="font-weight:700;">'+p.ccc+'</td>'
+        +'<td class="num">'+(p.self?'&mdash;':(gap>0?'<span class="good">'+(-gap)+'d</span>':'<span class="hot">+'+(-gap)+'d</span>'))+'</td>'
+        +'<td class="num">'+(p.self||gap<=0?'&mdash;':fmt.money0(cash))+'</td></tr>'));
+    });
+  }
+
+  // ---- Source Data ----
+  function renderSource(){
+    var invRows=SKUS.length, recRows=ACCTS.length, payRows=SUPP.length;
+    document.getElementById('srcRows').textContent = fmt.n(invRows+recRows+payRows);
+
+    var objects=[
+      ['Master','SAP MARA / MARC / MBEW, KNA1, LFA1', invRows+recRows+payRows, 'unit cost, terms, lead time, category'],
+      ['Transactions','SAP MSEG, BSID, BSIK (dated events)', '1.2m', 'usage, aging, days-to-pay'],
+      ['Balances','SAP MARD, open-item ledgers', invRows+recRows+payRows, 'on hand, amounts owed and due'],
+      ['Settings','Tool configuration (held locally)', 8, 'cost of capital, thresholds, service targets']
+    ];
+    setTable('srcObjects', objects.map(function(o){ return '<tr><td style="font-weight:600;">'+o[0]+'</td><td class="mini">'+o[1]+'</td><td class="num">'+(typeof o[2]==='number'?fmt.n(o[2]):o[2])+'</td><td class="mini">'+o[3]+'</td></tr>'; }).join(''));
+
+    var map=[
+      ['Unit cost','MBEW.STPRS','Master'],
+      ['Annual demand','sum(MSEG.MENGE) where issue','Transactions'],
+      ['On hand','MARD.LABST','Balances'],
+      ['Lead time','MARC.PLIFZ','Master'],
+      ['Receivable balance','BSID open items','Balances'],
+      ['Days to pay','BSAK clearing date &minus; baseline','Transactions'],
+      ['Payment terms','LFB1.ZTERM','Master'],
+      ['Cost of capital','Tool setting','Settings']
+    ];
+    setTable('srcMap', map.map(function(m){ return '<tr><td style="font-weight:600;">'+m[0]+'</td><td class="mini">'+m[1]+'</td><td><span class="tag flat">'+m[2]+'</span></td></tr>'; }).join(''));
+
+    setTable('srcInv', SKUS.map(function(s){ return '<tr><td style="font-family:var(--fm);font-size:12px;">'+s.id+'</td><td>'+s.desc+'</td><td class="num">'+fmt.money0(s.cost)+'</td><td class="num">'+fmt.n(s.demand)+'</td><td class="num">'+fmt.n(s.onHand)+'</td><td class="num'+(s.placeholder?' hot':'')+'">'+s.lt+(s.placeholder?' !':'')+'</td><td class="num'+(s.idle>DEAD_DAYS?' hot':'')+'">'+s.idle+'</td></tr>'; }).join(''));
+
+    setTable('srcRec', ACCTS.map(function(a){ var bal=a.cur+a.b1+a.b2+a.b3+a.b4; return '<tr><td>'+a.n+'</td><td class="num">'+fmt.money0(bal)+'</td><td class="num mut">'+fmt.money0(a.cur)+'</td><td class="num mut">'+fmt.money0(a.b1)+'</td><td class="num">'+fmt.money0(a.b2)+'</td><td class="num">'+fmt.money0(a.b3)+'</td><td class="num'+(a.b4>0?' hot':'')+'">'+fmt.money0(a.b4)+'</td></tr>'; }).join(''));
+
+    setTable('srcPay', SUPP.map(function(s){ var terms=s.disc>0?(Math.round(s.disc*100)+'/'+s.dd+' net '+s.net):('net '+s.net); return '<tr><td>'+s.n+'</td><td class="num">'+fmt.money0(s.bal)+'</td><td class="mini">'+terms+'</td><td class="num">'+s.paid+'</td></tr>'; }).join(''));
+
+    var settings=[
+      ['Cost of capital',(COC*100).toFixed(1)+'%','Finance'],
+      ['Carrying rate',(CARRY*100).toFixed(0)+'%','Finance'],
+      ['Ordering cost','$'+fmt.n(ORDER),'Operations'],
+      ['Disposal recovery',(RECOVERY*100).toFixed(0)+'%','Operations'],
+      ['Dead-stock threshold',DEAD_DAYS+' days','Operations'],
+      ['Overstock threshold',OVER_DAYS+' days','Operations'],
+      ['Service targets','A 98% · B 95% · C 90%','Operations'],
+      ['Peer group','5 named peers','Strategy']
+    ];
+    setTable('srcSettings', settings.map(function(x){ return '<tr><td style="font-weight:600;">'+x[0]+'</td><td class="num">'+x[1]+'</td><td class="mini">'+x[2]+'</td></tr>'; }).join(''));
+  }
+  function setTable(id, html){ var tb=document.querySelector('#'+id); if(tb) tb.innerHTML=html; }
+
+  // ---- Health ----
+  function healthRecords(){
+    var recs=[];
+    SKUS.forEach(function(s){
+      if(s.placeholder){
+        var Zc=Zsvc[Zclass[s.cls]]; var inflated=Zc*s.sd*Math.sqrt(s.lt); var real=Zc*s.sd*Math.sqrt(14);
+        var cash=(inflated-real)*s.cost;
+        recs.push({r:s.id,check:'Placeholder lead time',field:'lead_time = '+s.lt,eff:'Inflates safety stock and reorder point',cash:cash});
+      }
+      if(s.onHand<0) recs.push({r:s.id,check:'Negative stock quantity',field:'on_hand',eff:'Distorts days of stock and value sort',cash:0});
+      if(s.cost<=0) recs.push({r:s.id,check:'Zero or negative unit cost',field:'unit_cost',eff:'Breaks order-size and valuation',cash:0});
+    });
+    // a couple of receivables-side illustrative flags
+    recs.push({r:'INV-48213',check:'Invoice with no due date',field:'due_date = null',eff:'Cannot be aged; breaks DSO',cash:0});
+    recs.push({r:'INV-47990 / 47991',check:'Duplicate invoice number',field:'invoice_no',eff:'Overstates receivables',cash:88000});
+    return recs;
+  }
+  function renderHealth(){
+    var recs=healthRecords();
+    document.getElementById('hlN').textContent=recs.length;
+    document.getElementById('hlPlace').textContent=SKUS.filter(function(s){return s.placeholder;}).length;
+    document.getElementById('hlCash').textContent=fmt.money(recs.reduce(function(t,r){return t+r.cash;},0));
+    document.getElementById('ctHealth').textContent=recs.length;
+    var ab=document.getElementById('alertCount'); if(ab){ ab.textContent=recs.length; ab.style.display=recs.length>0?'flex':'none'; }
+    var tb=document.querySelector('#hlTable tbody'); tb.innerHTML='';
+    recs.forEach(function(r){
+      tb.appendChild(el('<tr><td style="font-family:var(--fm);font-size:12px;">'+r.r+'</td><td>'+r.check+'</td><td class="mini">'+r.field+'</td><td class="mini">'+r.eff+'</td><td class="num">'+(r.cash>0?fmt.money0(r.cash):'&mdash;')+'</td></tr>'));
+    });
+  }
+
+  // ================= NAV =================
+  var CTXMAP={dashboard:'Overview / Dashboard',inventory:'Working capital / Inventory',receivables:'Working capital / Receivables',payables:'Working capital / Payables',actions:'Synthesis / Action List',peers:'Synthesis / Peer Comparison',source:'Assurance / Source Data',health:'Assurance / Data Health',governance:'Assurance / Governance',how:'Start here / How It Works'};
+  function go(tab){
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id===tab);});
+    document.querySelectorAll('.nav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===tab);});
+    document.getElementById('ctx').textContent=CTXMAP[tab]||'';
+    document.getElementById('side').classList.remove('open');
+    try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
+  }
+  document.querySelectorAll('.nav button').forEach(function(b){ b.addEventListener('click',function(){ go(b.getAttribute('data-tab')); }); });
+  document.querySelectorAll('[data-goto]').forEach(function(x){ x.addEventListener('click',function(){ go(x.getAttribute('data-goto')); }); });
+  document.getElementById('mtoggle').addEventListener('click',function(){ document.getElementById('side').classList.toggle('open'); });
+
+  // data health fix-list export
+  var hlCsv=document.getElementById('hlCsvBtn');
+  if(hlCsv) hlCsv.addEventListener('click',function(){
+    var recs=healthRecords();
+    var rows=[['Record','Check failed','Field','Effect','Cash effect']];
+    recs.forEach(function(r){ rows.push([r.r,r.check,r.field,r.eff, r.cash>0?Math.round(r.cash):0]); });
+    var csv=rows.map(function(row){ return row.map(function(c){ var v=String(c).replace(/"/g,'""'); return /[",\n]/.test(v)?'"'+v+'"':v; }).join(','); }).join('\n');
+    var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    var url=URL.createObjectURL(blob); var a=document.createElement('a');
+    a.href=url; a.download='data-health-fix-list.csv'; document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  });
+
+  // user account menu
+  var userBtn=document.getElementById('userBtn'), umenu=document.getElementById('umenu');
+  function closeUserMenu(){ umenu.classList.remove('show'); userBtn.classList.remove('open'); }
+  userBtn.addEventListener('click',function(e){
+    if(e.target.closest('.umenu')){ closeUserMenu(); return; }
+    umenu.classList.toggle('show'); userBtn.classList.toggle('open');
+  });
+  document.addEventListener('click',function(e){ if(!e.target.closest('#userBtn')) closeUserMenu(); });
+  document.getElementById('signout').addEventListener('click',function(e){ e.preventDefault(); closeUserMenu(); });
+
+  // cost of capital + service target
+  document.getElementById('cocInput').addEventListener('input',function(){ var v=parseFloat(this.value); if(!isNaN(v)&&v>0){ COC=v/100; renderAll(); } });
+  document.getElementById('svcSel').addEventListener('change',function(){ if(currentSku) selectSku(currentSku); });
+  document.getElementById('skuSel').addEventListener('change',function(){ selectSku(this.value); });
+
+  // enter full screen on the first click anywhere (a fullscreen request must come from a user gesture)
+  var fsDone=false;
+  function goFullscreenOnce(){
+    if(fsDone) return; fsDone=true;
+    document.removeEventListener('click', goFullscreenOnce, true);
+    var e=document.documentElement;
+    var req=e.requestFullscreen||e.webkitRequestFullscreen||e.msRequestFullscreen;
+    if(req){ try{ var p=req.call(e); if(p&&p.catch) p.catch(function(){}); }catch(err){} }
+  }
+  document.addEventListener('click', goFullscreenOnce, true);
+
+  // How It Works: reveal on scroll, count up figures. Off if the device asks for reduced motion.
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function countUp(elm){
+    if(elm._done) return; elm._done = true;
+    var from=parseFloat(elm.getAttribute('data-from')), to=parseFloat(elm.getAttribute('data-to')), fmt=elm.getAttribute('data-count');
+    function show(v){ elm.textContent = fmt==='money' ? '$'+v.toFixed(2)+'m' : v.toFixed(1)+'%'; }
+    if(reduce){ show(to); return; }
+    var t0=null, dur=1100;
+    function frame(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/dur); var e=1-Math.pow(1-p,3); show(from+(to-from)*e); if(p<1) requestAnimationFrame(frame); }
+    requestAnimationFrame(frame);
+  }
+  function initHIW(){
+    var reveals = document.querySelectorAll('#how .reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(r){ r.classList.add('in'); r.querySelectorAll('[data-count]').forEach(countUp); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('in'); en.target.querySelectorAll('[data-count]').forEach(countUp); io.unobserve(en.target); }
+      });
+    },{threshold:0.25});
+    reveals.forEach(function(r){ io.observe(r); });
+  }
+
+  function renderAll(){
+    computeInventory();
+    renderDashboard(); renderInventory(); renderReceivables(); renderPayables(); renderActions(); renderPeers(); renderSource(); renderHealth();
+    applyGlossary(document.querySelector('.main'));
+  }
+  renderAll();
+  go('how');
+  initHIW();
+})();
+</script>
+</body>
+</html>
