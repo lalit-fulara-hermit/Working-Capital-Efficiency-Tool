@@ -876,6 +876,21 @@
 
     <div class="note calm" style="margin-top:12px;"><span class="l">Reading these</span>The placeholder card shows only the buffer that one SKU overstates, sized against a 14-day measured lead time. The all-flags card is the total cash across every flag, most of it a duplicate-invoice fault on the receivables side. They are separate figures and should not be added to the cash the action list releases.</div>
 
+    <div class="eyebrow">Understanding the placeholder flag</div>
+    <div class="card"><div class="bd prose">
+      <p style="margin-top:0;">This is the flag most people find confusing, so here it is in full, using the one SKU it fires on: the control valve actuator, VLV-0335.</p>
+      <h4>What a placeholder is</h4>
+      <p>To size stock, the tool needs the lead time, the days a replacement takes to arrive after you order it. The actuator has no measured lead time, so its source system filled the field with a default of 99 days. That 99 is not a measurement. It is a stand-in the system drops in when the real value was never entered. 99 and 999 are the usual defaults, picked to look obviously false, though they often go unnoticed and sit in the data.</p>
+      <h4>Why it inflates the buffer</h4>
+      <p>Safety stock rises with the lead time, because a longer wait means more can go wrong before resupply arrives. A 99-day wait builds a buffer about 2.7 times larger than a real 14-day lead time would. That extra stock is cash held for no operational reason. The tool sizes it at $7,638 for this SKU, shown as $8k on the placeholder card above.</p>
+      <h4>Why the tool flags it, not fixes it</h4>
+      <p>The tool knows 99 is a default, but it does not know the true lead time. It will not guess a number and overwrite the field, because that would invent data and hide the gap. So it flags the SKU and sizes the cost, and leaves the correction to the person who can find the real figure.</p>
+      <h4>How it gets corrected</h4>
+      <p>A person enters the true lead time in the source system. The tool does not do this. Once the corrected figure is in the data, the tool updates on the next load: the buffer resizes, the excess stock drops out, and the flag clears. Person fixes the data, then the tool reflects it, not the other way round.</p>
+      <h4>Why the cash figure moves</h4>
+      <p>The $7,638 is what the placeholder overstates if the true lead time is about 14 days. That 14-day norm is an assumption set in the tool, not a measured value. If the real lead time turns out higher, the overstatement shrinks. This is why it is a sized flag, not a booked saving.</p>
+    </div></div>
+
     <div class="eyebrow">Flagged records</div>
     <div class="card"><div class="bd tight">
       <div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button id="hlCsvBtn" style="font-family:var(--fm);font-size:11px;letter-spacing:.04em;color:var(--purple);background:var(--mist);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;">Download fix list (CSV)</button></div>
