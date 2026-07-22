@@ -876,7 +876,7 @@
 
     <div class="note calm" style="margin-top:12px;"><span class="l">Reading these</span>The placeholder card shows only the buffer that one SKU overstates, sized against a 14-day measured lead time. The all-flags card is the total cash across every flag, most of it a duplicate-invoice fault on the receivables side. They are separate figures and should not be added to the cash the action list releases.</div>
 
-    <div class="eyebrow">Understanding the placeholder flag</div>
+    <div class="eyebrow" id="placeholderExplainer">Understanding the placeholder flag</div>
     <div class="card"><div class="bd prose">
       <p style="margin-top:0;">This is the flag most people find confusing, so here it is in full, using the one SKU it fires on: the control valve actuator, VLV-0335.</p>
       <h4>What a placeholder is</h4>
@@ -1627,7 +1627,9 @@
     h.appendChild(el('<div class="barrow"><span class="lbl">Flagged</span><div class="track"><div class="fill hot" style="width:'+Math.min(100,flags.length*14)+'%"></div></div><span class="val">'+flags.length+' records</span></div>'));
     var place = SKUS.filter(function(s){return s.placeholder;}).length;
     h.appendChild(el('<div class="barrow"><span class="lbl">Placeholder lead time</span><div class="track"><div class="fill" style="width:'+Math.min(100,place*20)+'%"></div></div><span class="val">'+place+' SKUs</span></div>'));
-    h.appendChild(el('<div class="mini" style="margin-top:8px;">Correcting placeholder lead times releases safety stock inflated by the 99-day default on the valve actuator. See Data Health for the full list.</div>'));
+    var hnote = el('<div class="mini" style="margin-top:8px;cursor:pointer;">A placeholder is a system default (99 or 999 days) standing in for a lead time that was never measured. It inflates the stock buffer until someone corrects it at source. The tool flags and sizes it, it does not overwrite it. <span style="color:var(--purple);font-weight:600;text-decoration:underline;">What this means &rarr;</span></div>');
+    hnote.addEventListener('click', function(){ go('health','placeholderExplainer'); });
+    h.appendChild(hnote);
   }
 
   // ---- Inventory ----
@@ -2140,20 +2142,23 @@
       var cash = r.cash>0 ? fmt.money0(r.cash) : 'no cash effect';
       var cashCls = r.cash>0 ? 'am-cash' : 'am-cash zero';
       var b=el('<button class="am-item"><div class="am-r"><span class="am-check">'+r.check+'</span><span class="'+cashCls+'">'+cash+'</span></div><div class="am-rec">'+r.r+'</div><div class="am-eff">'+r.eff+'</div></button>');
-      b.addEventListener('click',function(){ closeAlerts(); go('health'); });
+      b.addEventListener('click',function(){ closeAlerts(); go('health', /placeholder/i.test(r.check)?'placeholderExplainer':null); });
       list.appendChild(b);
     });
   }
 
   // ================= NAV =================
   var CTXMAP={dashboard:'Overview / Dashboard',inventory:'Working capital / Inventory',receivables:'Working capital / Receivables',payables:'Working capital / Payables',actions:'Synthesis / Action List',trend:'Synthesis / Trend vs History',peers:'Synthesis / Peer Comparison',source:'Assurance / Source Data',health:'Assurance / Data Health',governance:'Assurance / Governance',how:'Start here / How It Works'};
-  function go(tab){
+  function go(tab, anchor){
     if(typeof closeAlerts==='function') closeAlerts();
     document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id===tab);});
     document.querySelectorAll('.nav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===tab);});
     document.getElementById('ctx').textContent=CTXMAP[tab]||'';
     document.getElementById('side').classList.remove('open');
-    try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
+    try{
+      if(anchor){ var a=document.getElementById(anchor); if(a){ a.scrollIntoView({behavior:'smooth',block:'start'}); return; } }
+      window.scrollTo({top:0,behavior:'smooth'});
+    }catch(e){}
   }
   document.querySelectorAll('.nav button').forEach(function(b){ b.addEventListener('click',function(){ go(b.getAttribute('data-tab')); }); });
   document.querySelectorAll('.tgl').forEach(function(b){ b.addEventListener('click',function(){ TREND_BASIS=b.getAttribute('data-basis'); renderTrend(); }); });
