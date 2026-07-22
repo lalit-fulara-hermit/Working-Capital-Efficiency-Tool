@@ -390,7 +390,7 @@
     <div class="grp">Assurance</div>
     <div class="nav">
       <button data-tab="source">Source Data</button>
-      <button data-tab="health">Data Health<span class="ct" id="ctHealth">4</span></button>
+      <button data-tab="health">Data Health<span class="ct" id="ctHealth">3</span></button>
       <button data-tab="governance">Governance</button>
     </div>
   </nav>
@@ -758,14 +758,14 @@
     <div class="phead">
       <div class="crumb">Synthesis / Peer Comparison</div>
       <h1>Peer comparison</h1>
-      <p class="sub">Your cash cycle against peers you choose, using figures from their public accounts. Each day of difference is turned into cash. Peer names are hidden in this demo and come from filings in a live build.</p>
+      <p class="sub">Your working capital against peers you choose, from their public accounts. The opportunity runs on Days Working Capital, which normalises to revenue so the day-gap converts to cash cleanly. CCC is kept alongside as the operating read. Peer names are hidden in this demo and come from filings in a live build.</p>
     </div>
 
     <div class="grid g4">
-      <div class="kpi"><div class="k">Your CCC</div><div class="v" id="peCCC">79<span class="un">days</span></div><div class="foot"><span class="mut">DIH 62 · DSO 58 · DPO 41</span></div></div>
-      <div class="kpi"><div class="k">Top-quartile CCC</div><div class="v good" id="peTopQ">0<span class="un">days</span></div><div class="foot"><span class="mut">the credible target</span></div></div>
-      <div class="kpi"><div class="k">Peer median CCC</div><div class="v" id="peMed">0<span class="un">days</span></div><div class="foot"><span class="mut" id="peMedGap">gap vs median</span></div></div>
-      <div class="kpi"><div class="k">Opportunity vs top-quartile</div><div class="v hot" id="peCash">$0</div><div class="foot"><span class="mut" id="peCashN">days x daily cash flow</span></div></div>
+      <div class="kpi"><div class="k">Your Days Working Capital</div><div class="v" id="peDWC">0<span class="un">days</span></div><div class="foot"><span class="mut" id="peCccFoot">CCC 79d</span></div></div>
+      <div class="kpi"><div class="k">Top-quartile DWC</div><div class="v good" id="peTopQ">0<span class="un">days</span></div><div class="foot"><span class="mut" id="peTopQFoot">clean peers only</span></div></div>
+      <div class="kpi"><div class="k">Peer median DWC</div><div class="v" id="peMed">0<span class="un">days</span></div><div class="foot"><span class="mut" id="peMedGap">gap vs median</span></div></div>
+      <div class="kpi"><div class="k">Opportunity vs top-quartile</div><div class="v hot" id="peCash">$0</div><div class="foot"><span class="mut" id="peCashN">DWC gap x daily cash</span></div></div>
     </div>
 
     <div class="eyebrow">Cash conversion cycle by peer</div>
@@ -775,11 +775,12 @@
     <div class="card"><div class="bd tight">
       <div style="overflow-x:auto;">
       <table class="t" id="peerTable">
-        <thead><tr><th>Company</th><th class="num">DIH</th><th class="num">DSO</th><th class="num">DPO</th><th class="num">CCC</th><th class="num">Gap vs you</th><th class="num">Cash effect</th></tr></thead>
+        <thead><tr><th>Company</th><th class="num">DIH</th><th class="num">DSO</th><th class="num">DPO</th><th class="num">CCC</th><th class="num">DWC</th><th class="num">DWC gap</th><th class="num">Cash effect</th><th>Data</th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
-      <div class="note calm" style="margin-top:12px;"><span class="l">Method</span>You choose the peers, so the comparison is never against the wrong firms. Three reference points: median is normal good, top-quartile is the credible target and the gap to it is the quantified opportunity, best-in-class is the frontier. Cash for each day of difference = yearly revenue / 365.</div>
+      <div class="note calm" style="margin-top:12px;"><span class="l">Method</span>The opportunity is the gap from your Days Working Capital to the top-quartile Days Working Capital, priced at your revenue / 365. DWC is used, not CCC, because CCC sums receivables days on revenue with inventory and payables days on cost, so converting the CCC gap at one revenue rate overstates the inventory and payables part. The top quartile is computed on clean peers only; caveated and excluded peers are shown but held out of the quartile. This mirrors how working-capital benchmarks headline the figure.</div>
+      <div class="note calm" style="margin-top:8px;"><span class="l">Bound</span>A stricter component method sizes each pool separately, the DSO gap at revenue / 365 and the DIH and DPO gaps at cost / 365, then sums. It reads higher because no single peer holds the top quartile on all three at once, so it describes a synthetic frontier rather than one real firm. The two methods bracket the opportunity; the single Days Working Capital figure is the conservative, internally consistent basis.</div>
     </div></div>
   </section>
 
@@ -1156,7 +1157,7 @@
 
     <div class="eyebrow reveal">Why releasing cash matters</div>
     <div class="card reveal"><div class="bd">
-      <p class="hiw-say" style="margin-top:0;">Releasing cash does not change your profit. It lowers the money you have tied up to earn it. The same profit on less money is a better return.</p>
+      <p class="hiw-say" style="margin-top:0;">Releasing cash does not change your profit. It lowers the money you have tied up to earn it. The same profit on less money is a better return. The uplift shown is the steady-state level, once the cash is out; the year you clear dead stock carries a one-time write-off that is not counted here.</p>
       <div class="returnbox" style="margin-top:16px;">
         <div class="retstat">
           <div class="rk">Cash tied up</div>
@@ -1239,6 +1240,7 @@
   FIRM.ar        = FIRM.dso/365 * FIRM.revenue; // 9.22m
   FIRM.ap        = FIRM.dpo/365 * FIRM.cogs;    // 4.60m
   FIRM.nwc       = FIRM.inventory + FIRM.ar - FIRM.ap;
+  FIRM.dwc       = FIRM.nwc/FIRM.revenue*365;   // Days Working Capital: NWC normalised to revenue
 
   // ---- Inventory sample ----
   var SKUS = [
@@ -1321,22 +1323,38 @@
   ];
 
   // ---- Peers sample ----
-  var REVENUE = 58000000;
+  // Five raw fields per peer, filing-sourced in a live build: revenue, cogs, inventory,
+  // trade receivables, trade payables. Days, CCC, NWC and Days Working Capital are all
+  // derived below, so there is one source of truth per peer, the same shape as the subject.
+  // Balances here are illustrative, back-constructed to hold each peer's days constant while
+  // carrying a distinct cost mix, so the revenue-normalised figure (DWC) can diverge from CCC.
+  // dq is the per-peer data-quality tier that governs the benchmark:
+  //   clean    = all five filing-sourced, trade-level, same period end. Counts in the quartile.
+  //   caveated = a stated compromise (consolidated used, or total not split to trade). Shown, not in quartile.
+  //   excluded = two or more fields not sourceable to standard. Shown, dropped from the quartile.
+  var REVENUE = 58000000;   // subject revenue, retained for the daily-cash conversion
   var PEERS = [
-    {n:'Your firm',dih:62,dso:58,dpo:41,self:true},
-    {n:'Peer A',dih:48,dso:52,dpo:39},
-    {n:'Peer B',dih:58,dso:61,dpo:47},
-    {n:'Peer C',dih:41,dso:46,dpo:32},
-    {n:'Peer D',dih:71,dso:66,dpo:49},
-    {n:'Peer E',dih:55,dso:57,dpo:43},
-    {n:'Peer F',dih:52,dso:54,dpo:38},
-    {n:'Peer G',dih:63,dso:60,dpo:44},
-    {n:'Peer H',dih:45,dso:50,dpo:34},
-    {n:'Peer I',dih:68,dso:63,dpo:46},
-    {n:'Peer J',dih:50,dso:55,dpo:40},
-    {n:'Peer K',dih:60,dso:62,dpo:45}
+    {n:'Your firm',rev:58000000,cogs:41000000,inv:6960000,ar:9220000,ap:4610000,self:true,dq:'clean'},
+    {n:'Peer A',rev:72000000,cogs:51840000,inv:6820000,ar:10260000,ap:5540000,dq:'clean'},
+    {n:'Peer B',rev:45000000,cogs:31500000,inv:5000000,ar:7520000,ap:4060000,dq:'clean'},
+    {n:'Peer C',rev:88000000,cogs:65120000,inv:7320000,ar:11090000,ap:5710000,dq:'clean'},
+    {n:'Peer D',rev:39000000,cogs:26910000,inv:5240000,ar:7050000,ap:3610000,dq:'caveated',dqn:'Consolidated used; downstream segment not separately disclosed'},
+    {n:'Peer E',rev:61000000,cogs:43310000,inv:6530000,ar:9530000,ap:5100000,dq:'clean'},
+    {n:'Peer F',rev:67000000,cogs:48910000,inv:6970000,ar:9910000,ap:5090000,dq:'clean'},
+    {n:'Peer G',rev:54000000,cogs:37800000,inv:6520000,ar:8880000,ap:4560000,dq:'clean'},
+    {n:'Peer H',rev:79000000,cogs:59250000,inv:7300000,ar:10820000,ap:5520000,dq:'caveated',dqn:'Total payables used; trade payables not split out'},
+    {n:'Peer I',rev:42000000,cogs:28560000,inv:5320000,ar:7250000,ap:3600000,dq:'excluded',dqn:'Inventory and trade receivables not sourceable to filing standard'},
+    {n:'Peer J',rev:70000000,cogs:50400000,inv:6900000,ar:10550000,ap:5520000,dq:'clean'},
+    {n:'Peer K',rev:51000000,cogs:36210000,inv:5950000,ar:8660000,ap:4460000,dq:'clean'}
   ];
-  PEERS.forEach(function(p){ p.ccc = p.dih + p.dso - p.dpo; });
+  PEERS.forEach(function(p){
+    p.dih = Math.round(p.inv/p.cogs*365);
+    p.dso = Math.round(p.ar/p.rev*365);
+    p.dpo = Math.round(p.ap/p.cogs*365);
+    p.ccc = p.dih + p.dso - p.dpo;
+    p.nwc = p.inv + p.ar - p.ap;
+    p.dwc = p.nwc/p.rev*365;               // revenue-normalised, so the gap converts to cash exactly
+  });
 
   // ---- Self history: period-end balances (sourced); days derived by the engine ----
   // Latest period ties to the FIRM anchor. Balances are the primary figure; days follow.
@@ -1408,6 +1426,7 @@
     ['return on invested capital','Operating profit after tax divided by the capital invested in the business.',false],
     ['placeholder lead time','A system default lead time (99 or 999 days), not a measured value, that inflates the buffer.',false],
     ['net working capital','Inventory plus receivables minus payables; the cash tied up in operations.',false],
+    ['days working capital','Net working capital as a share of revenue, expressed in days. Normalises the cash tied up so a day-gap converts to cash at revenue / 365.',false],
     ['target max stock','Reorder point plus one order quantity; the level stock should not exceed.',false],
     ['target maximum','Reorder point plus one order quantity; the level stock should not exceed.',false],
     ['annualised return','A short-period rate expressed as a yearly rate, so it compares with the cost of capital.',false],
@@ -1445,6 +1464,7 @@
     ['ROIC','Return on invested capital: operating profit after tax over invested capital.',true],
     ['NOPAT','Net operating profit after tax: profit from operations, before financing.',true],
     ['NWC','Net working capital: inventory plus receivables minus payables.',true],
+    ['DWC','Days working capital: net working capital as a share of revenue, in days.',true],
     ['ABC','Segmentation that ranks items by the cash they turn over: A holds most of the value, C the least.',true]
   ].map(function(g){ return {term:g[0], low:g[0].toLowerCase(), def:g[1], cs:g[2]}; })
    .sort(function(a,b){ return b.term.length - a.term.length; });
@@ -1539,12 +1559,18 @@
     return sorted[lo] + (sorted[hi]-sorted[lo])*(idx-lo);
   }
   function peerStats(){
-    var self=PEERS.filter(function(p){return p.self;})[0];
-    var others=PEERS.filter(function(p){return !p.self;}).map(function(p){return p.ccc;}).sort(function(a,b){return a-b;});
-    var best=Math.min.apply(null,others);
-    var median=Math.round(pctile(others,0.5));
-    var topQ=Math.round(pctile(others,0.25));   // 25th pct of CCC: lower is better
-    return {self:self.ccc, best:best, median:median, topQ:topQ, daily:FIRM.revenue/365};
+    var comps=PEERS.filter(function(p){return !p.self;});
+    // CCC reference, descriptive, on all comparators (continuity with the prior build)
+    var ccc=comps.map(function(p){return p.ccc;}).sort(function(a,b){return a-b;});
+    // Days Working Capital, the opportunity basis, on clean comparators only
+    var clean=comps.filter(function(p){return p.dq==='clean';}).map(function(p){return p.dwc;}).sort(function(a,b){return a-b;});
+    return {
+      selfCcc:FIRM.ccc, selfDwc:FIRM.dwc,
+      cccBest:Math.min.apply(null,ccc), cccMedian:Math.round(pctile(ccc,0.5)), cccTopQ:Math.round(pctile(ccc,0.25)),
+      dwcBest:pctile(clean,0), dwcMedian:pctile(clean,0.5), dwcTopQ:pctile(clean,0.25),
+      cleanN:clean.length, compN:comps.length,
+      daily:FIRM.revenue/365
+    };
   }
   function setV(id, num, unit){ var e=document.getElementById(id); if(e) e.innerHTML = num + (unit?'<span class="un">'+unit+'</span>':''); }
 
@@ -1552,7 +1578,6 @@
   function renderDashboard(){
     ACT = actionItems();
     var tot = actionTotals();
-    var ps = peerStats();
     // headline KPIs, all engine-driven
     setV('kCCC', FIRM.ccc, 'days');
     var ownBest = histOwnBest('ccc');
@@ -1815,7 +1840,7 @@
     w.appendChild(el('<div class="barrow"><span class="lbl">Invested capital now</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">'+fmt.money(IC)+'</span></div>'));
     w.appendChild(el('<div class="barrow"><span class="lbl">Capital released</span><div class="track"><div class="fill hot" style="width:'+(nwcT/IC*100).toFixed(1)+'%"></div></div><span class="val hot">&minus;'+fmt.money(nwcT)+'</span></div>'));
     w.appendChild(el('<div class="barrow"><span class="lbl">Invested capital after</span><div class="track"><div class="fill" style="width:'+((IC-nwcT)/IC*100).toFixed(1)+'%;background:var(--up);"></div></div><span class="val good">'+fmt.money(IC-nwcT)+'</span></div>'));
-    w.appendChild(el('<div class="mini" style="margin-top:8px;">ROIC = operating profit '+fmt.money(NOPAT)+' / invested capital. Releasing '+fmt.money(nwcT)+' lifts it from '+(roic0*100).toFixed(1)+'% to '+(roic1*100).toFixed(1)+'%.</div>'));
+    w.appendChild(el('<div class="mini" style="margin-top:8px;">ROIC = operating profit '+fmt.money(NOPAT)+' / invested capital. Releasing '+fmt.money(nwcT)+' lifts it from '+(roic0*100).toFixed(1)+'% to '+(roic1*100).toFixed(1)+'%. This is the steady-state return: the full book value of the released capital leaves the balance sheet, and the one-time disposal write-off on dead stock is excluded, so the transition-year figure is lower.</div>'));
   }
 
   var currentAction = null;
@@ -1963,37 +1988,45 @@
   }
 
   function renderPeers(){
-    var self=PEERS.filter(function(p){return p.self;})[0];
-    var others=PEERS.filter(function(p){return !p.self;}).map(function(p){return p.ccc;}).sort(function(a,b){return a-b;});
-    var best=Math.min.apply(null,others);
-    var median=Math.round(pctile(others,0.5));
-    var topQ=Math.round(pctile(others,0.25));
-    var daily=REVENUE/365;
-    var oppDays=Math.max(0, self.ccc-topQ);
-    document.getElementById('peCCC').textContent=self.ccc;
-    document.getElementById('peTopQ').textContent=topQ;
-    document.getElementById('peMed').textContent=median;
-    document.getElementById('peMedGap').textContent=(self.ccc-median>0?'+':'')+(self.ccc-median)+'d vs median';
+    var ps=peerStats();
+    var daily=ps.daily, selfDwc=ps.selfDwc, selfCcc=ps.selfCcc;
+    var topQ=ps.dwcTopQ, median=ps.dwcMedian, best=ps.dwcBest;
+    var oppDays=Math.max(0, selfDwc-topQ);
+
+    document.getElementById('peDWC').innerHTML=selfDwc.toFixed(1)+'<span class="un">days</span>';
+    document.getElementById('peCccFoot').textContent='CCC '+selfCcc+'d \u00b7 DIH '+FIRM.dih+' \u00b7 DSO '+FIRM.dso+' \u00b7 DPO '+FIRM.dpo;
+    document.getElementById('peTopQ').innerHTML=topQ.toFixed(1)+'<span class="un">days</span>';
+    document.getElementById('peTopQFoot').textContent='clean peers only ('+ps.cleanN+' of '+ps.compN+')';
+    document.getElementById('peMed').innerHTML=median.toFixed(1)+'<span class="un">days</span>';
+    document.getElementById('peMedGap').textContent=(selfDwc-median>0?'+':'')+(selfDwc-median).toFixed(1)+'d vs median';
     document.getElementById('peCash').textContent=fmt.money(oppDays*daily);
-    document.getElementById('peCashN').textContent=oppDays+'d to top-quartile x daily cash';
+    document.getElementById('peCashN').textContent=oppDays.toFixed(1)+'d to top-quartile x daily cash';
 
     document.getElementById('peerRef').innerHTML =
-      'Reference: best '+best+'d &middot; top-quartile '+topQ+'d (target) &middot; median '+median+'d &middot; you '+self.ccc+'d';
+      'Days Working Capital &mdash; best '+best.toFixed(1)+'d &middot; top-quartile '+topQ.toFixed(1)+'d (target) &middot; median '+median.toFixed(1)+'d &middot; you '+selfDwc.toFixed(1)+'d &nbsp;|&nbsp; bars show CCC, the operating read';
 
     var bars=document.getElementById('peerBars'); bars.innerHTML='';
     var maxCcc=Math.max.apply(null,PEERS.map(function(p){return p.ccc;}));
     PEERS.slice().sort(function(a,b){return a.ccc-b.ccc;}).forEach(function(p){
-      var color = p.self?'var(--magenta)':(p.ccc<=topQ?'var(--up)':'var(--purple-mid)');
+      var color = p.self?'var(--magenta)':(p.ccc<=ps.cccTopQ?'var(--up)':'var(--purple-mid)');
       bars.appendChild(el('<div class="barrow"><span class="lbl" style="'+(p.self?'color:var(--magenta);font-weight:700;':'')+'">'+p.n+'</span><div class="track"><div class="fill" style="width:'+(p.ccc/maxCcc*100).toFixed(1)+'%;background:'+color+';"></div></div><span class="val">'+p.ccc+'d</span></div>'));
     });
 
     var tb=document.querySelector('#peerTable tbody'); tb.innerHTML='';
     PEERS.forEach(function(p){
-      var gap=p.self?0:(self.ccc-p.ccc);
-      var cash=gap*daily;
-      tb.appendChild(el('<tr'+(p.self?' style="background:var(--mist);font-weight:600;"':'')+'><td>'+p.n+'</td><td class="num">'+p.dih+'</td><td class="num">'+p.dso+'</td><td class="num">'+p.dpo+'</td><td class="num" style="font-weight:700;">'+p.ccc+'</td>'
-        +'<td class="num">'+(p.self?'&mdash;':(gap>0?'<span class="good">'+(-gap)+'d</span>':'<span class="hot">+'+(-gap)+'d</span>'))+'</td>'
-        +'<td class="num">'+(p.self||gap<=0?'&mdash;':fmt.money0(cash))+'</td></tr>'));
+      var gap=p.self?0:(selfDwc-p.dwc);        // positive: peer is leaner than you
+      var cash=(!p.self && gap>0 && p.dq==='clean') ? gap*daily : 0;
+      var dqCell = p.self ? '<span class="mut">subject</span>'
+        : (p.dq==='clean' ? '<span class="mut">clean</span>'
+          : '<span style="color:var(--magenta);font-weight:600;" title="'+(p.dqn||'')+'">'+p.dq+'</span>');
+      var rowStyle = p.self ? ' style="background:var(--mist);font-weight:600;"' : (p.dq==='excluded' ? ' style="opacity:.55;"' : '');
+      var gapCell = p.self ? '&mdash;' : (gap>0?'<span class="good">-'+gap.toFixed(1)+'d</span>':'<span class="hot">+'+(-gap).toFixed(1)+'d</span>');
+      var cashCell = (p.self || p.dq!=='clean' || gap<=0) ? '&mdash;' : fmt.money0(cash);
+      tb.appendChild(el('<tr'+rowStyle+'><td>'+p.n+'</td><td class="num">'+p.dih+'</td><td class="num">'+p.dso+'</td><td class="num">'+p.dpo+'</td><td class="num" style="font-weight:700;">'+p.ccc+'</td>'
+        +'<td class="num">'+p.dwc.toFixed(1)+'</td>'
+        +'<td class="num">'+gapCell+'</td>'
+        +'<td class="num">'+cashCell+'</td>'
+        +'<td>'+dqCell+'</td></tr>'));
     });
   }
 
